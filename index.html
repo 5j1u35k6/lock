@@ -1,0 +1,706 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Lock, Key, Calendar, ShieldAlert, CheckCircle, RefreshCcw, X, Activity, Thermometer, ChevronRight, Download, Eye, Zap, Disc, Palette, Droplet, Ghost, Flame, Anchor, Globe, Ruler, Smile, MicOff, Headphones } from 'lucide-react';
+
+// --- 多語言設定 (UI Translations) ---
+const TRANSLATIONS = {
+  'zh-TW': {
+    title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'MASTER AI v5.0',
+    intro_title: '歡迎來到你的新生活',
+    intro_desc: (accent) => <>我是系統指導者。你渴望<span className={accent}>控制</span>與<span className={accent}>剝奪</span>。在這裡，你不需要思考，只需要<span className="font-bold">執行</span>。</>,
+    btn_start: '開始制定計畫', step1_title: '基本資料', label_name: '暱稱 / 稱呼 · Nickname', label_level: '強度等級 · Intensity',
+    label_date: '製作月份 · Date', label_year: '西元年 · YYYY', label_month: '月份 · Month',
+    step1_ratings_title: '部位與程度接受度 · Zones & Limits',
+    label_nipples: '乳頭開發 · Nipples', label_anal: '後庭適應 · Anal', label_urethra: '尿道/排泄 · Urethra',
+    label_pain: '疼痛忍受 · Pain', label_humiliation: '羞恥感 · Humiliation', label_edging: '邊緣控射 · Edging',
+    label_bondage: '束縛/拘束 · Bondage', label_public: '露出/野外 · Public', label_service: '侍奉/任務 · Service',
+    label_sensory: '感官剝奪 · Sensory', // Replaced Sissy
+    step1_theme_title: '視覺主題風格 · Visual Theme', btn_generate: '生成鎖曆計畫 · Generate Protocol',
+    step2_title: '的專屬鎖曆', btn_reset: '重新評估', btn_download: '下載鎖曆', modal_day: 'DAY',
+    footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
+    warn_title: '警告：成人內容', warn_text1: '本網站內容涵蓋成人議題、BDSM 以及貞操控制等情節。', warn_text2: '依據《兒童及少年福利與權益保障法》第 46 條規定，未滿 18 歲之兒童及少年不得瀏覽本網站內容。', warn_leave: '離開 (Leave)', warn_enter: '我已年滿 18 歲 (Enter)'
+  },
+  'en': {
+    title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'MASTER AI v5.0',
+    intro_title: 'Welcome to Your New Life',
+    intro_desc: (accent) => <>I am the System Master. You crave <span className={accent}>Control</span> and <span className={accent}>Denial</span>. Here, you don't think. You <span className="font-bold">Obey</span>.</>,
+    btn_start: 'Initialize Protocol', step1_title: 'Subject Data', label_name: 'Name · Callsign', label_level: 'Intensity · Level',
+    label_date: 'Target Date · Month', label_year: 'Year · YYYY', label_month: 'Month · MM',
+    step1_ratings_title: 'Zones & Limits',
+    label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra/Piss', label_pain: 'Pain Tolerance',
+    label_humiliation: 'Humiliation', label_edging: 'Edging/Denial', label_bondage: 'Bondage', label_public: 'Public/Exposure',
+    label_service: 'Service/Chores', label_sensory: 'Sensory Deprivation',
+    step1_theme_title: 'Visual Theme', btn_generate: 'Generate Protocol', step2_title: "'s Lock Calendar", btn_reset: 'Reset', btn_download: 'Download',
+    modal_day: 'DAY', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
+    warn_title: 'WARNING: ADULT CONTENT', warn_text1: 'This site contains adult themes including BDSM and Chastity.', warn_text2: 'You must be 18 years or older to enter.', warn_leave: 'Leave', warn_enter: 'I am 18+ (Enter)'
+  },
+  'jp': {
+    title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'MASTER AI v5.0',
+    intro_title: '新しい生活へようこそ',
+    intro_desc: (accent) => <>私はシステム管理者です。あなたは<span className={accent}>支配</span>と<span className={accent}>剥奪</span>を望んでいます。ここでは考える必要はありません。<span className="font-bold">実行</span>あるのみです。</>,
+    btn_start: '計画を作成する', step1_title: '基本データ', label_name: '名前 · Nickname', label_level: '強度 · Intensity',
+    label_date: '日付設定 · Date', label_year: '西暦 · YYYY', label_month: '月 · Month',
+    step1_ratings_title: '部位とレベル · Zones & Limits',
+    label_nipples: '乳首開発 · Nipples', label_anal: 'アナル開発 · Anal', label_urethra: '尿道/排泄 · Urethra',
+    label_pain: '苦痛耐性 · Pain', label_humiliation: '羞恥心 · Humiliation', label_edging: '寸止め · Edging',
+    label_bondage: '拘束 · Bondage', label_public: '露出/野外 · Public', label_service: '奉仕 · Service', label_sensory: '感覚遮断 · Sensory',
+    step1_theme_title: 'テーマカラー · Theme', btn_generate: '計画を生成 · Generate', step2_title: 'の管理カレンダー', btn_reset: '再設定', btn_download: '画像を保存',
+    modal_day: 'DAY', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
+    warn_title: 'R-18 成人向け', warn_text1: 'このサイトにはBDSMや貞操帯などの成人向けコンテンツが含まれています。', warn_text2: '18歳未満の方の閲覧は固くお断りします。', warn_leave: '退出する', warn_enter: '18歳以上です (Enter)'
+  },
+  'kr': {
+    title: '정조 관리 계획', subtitle: 'PROTOCOL', version: 'MASTER AI v5.0',
+    intro_title: '새로운 삶에 오신 것을 환영합니다',
+    intro_desc: (accent) => <>시스템 관리자입니다. 당신은 <span className={accent}>통제</span>와 <span className={accent}>박탈</span>을 갈망합니다. 여기서는 생각할 필요가 없습니다. <span className="font-bold">복종</span>하십시오.</>,
+    btn_start: '프로토콜 시작', step1_title: '기본 정보', label_name: '이름/호칭 · Name', label_level: '강도 · Level',
+    label_date: '날짜 설정 · Date', label_year: '연도 · YYYY', label_month: '월 · Month',
+    step1_ratings_title: '영역 및 한계 · Zones & Limits',
+    label_nipples: '유두 개발 · Nipples', label_anal: '애널 적응 · Anal', label_urethra: '요도/배설 · Urethra', label_pain: '고통 감내 · Pain',
+    label_humiliation: '수치심 · Humiliation', label_edging: '에징/지연 · Edging', label_bondage: '속박/구속 · Bondage', label_public: '노출/야외 · Public',
+    label_service: '봉사/임무 · Service', label_sensory: '감각 박탈 · Sensory',
+    step1_theme_title: '시각 테마 · Theme', btn_generate: '계획 생성 · Generate', step2_title: '의 캘린더', btn_reset: '재설정', btn_download: '다운로드',
+    modal_day: 'DAY', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
+    warn_title: '성인 콘텐츠 경고', warn_text1: '이 사이트는 BDSM 및 정조대와 같은 성인 주제를 포함합니다.', warn_text2: '18세 미만은 입장할 수 없습니다.', warn_leave: '나가기', warn_enter: '18세 이상 (입장)'
+  },
+  'de': {
+    title: 'KEUSCHHEITS PROTOKOLL', subtitle: 'SYSTEM', version: 'MASTER AI v5.0',
+    intro_title: 'Willkommen in deinem neuen Leben',
+    intro_desc: (accent) => <>Ich bin der System-Meister. Du sehnst dich nach <span className={accent}>Kontrolle</span> und <span className={accent}>Verweigerung</span>. Hier denkst du nicht. Du <span className="font-bold">Gehorchst</span>.</>,
+    btn_start: 'Protokoll Starten', step1_title: 'Subjekt Daten', label_name: 'Name · Callsign', label_level: 'Intensität · Level',
+    label_date: 'Zieldatum · Date', label_year: 'Jahr · YYYY', label_month: 'Monat · Month',
+    step1_ratings_title: 'Zonen & Limits',
+    label_nipples: 'Nippel', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Schmerz',
+    label_humiliation: 'Erniedrigung', label_edging: 'Edging', label_bondage: 'Fesselung', label_public: 'Öffentlichkeit',
+    label_service: 'Dienst', label_sensory: 'Sensorischer Entzug',
+    step1_theme_title: 'Visuelles Thema', btn_generate: 'Generieren', step2_title: 's Kalender', btn_reset: 'Zurücksetzen', btn_download: 'Herunterladen',
+    modal_day: 'TAG', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MEISTER GENEHMIGT',
+    warn_title: 'WARNUNG: INHALT AB 18', warn_text1: 'Diese Seite enthält Themen wie BDSM und Keuschheit.', warn_text2: 'Zugang nur für Erwachsene.', warn_leave: 'Verlassen', warn_enter: 'Eintreten (18+)'
+  },
+  'es': {
+    title: 'PROTOCOLO DE CASTIDAD', subtitle: 'SISTEMA', version: 'MASTER AI v5.0',
+    intro_title: 'Bienvenido a tu nueva vida',
+    intro_desc: (accent) => <>Soy el Maestro del Sistema. Anhelas <span className={accent}>Control</span> y <span className={accent}>Negación</span>. Aquí no piensas. <span className="font-bold">Obedeces</span>.</>,
+    btn_start: 'Iniciar Protocolo', step1_title: 'Datos del Sujeto', label_name: 'Nombre · Apodo', label_level: 'Intensidad · Nivel',
+    label_date: 'Fecha Objetivo · Date', label_year: 'Año · YYYY', label_month: 'Mes · Month',
+    step1_ratings_title: 'Zonas y Límites',
+    label_nipples: 'Pezones', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dolor',
+    label_humiliation: 'Humillación', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público',
+    label_service: 'Servicio', label_sensory: 'Privación Sensorial',
+    step1_theme_title: 'Tema Visual', btn_generate: 'Generar Protocolo', step2_title: ' Calendario', btn_reset: 'Reiniciar', btn_download: 'Descargar',
+    modal_day: 'DÍA', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'APROBADO POR EL MAESTRO',
+    warn_title: 'ADVERTENCIA: CONTENIDO ADULTO', warn_text1: 'Este sitio contiene temas de BDSM y Castidad.', warn_text2: 'Debes ser mayor de 18 años.', warn_leave: 'Salir', warn_enter: 'Entrar (18+)'
+  },
+  'fr': {
+    title: 'PROTOCOLE DE CHASTETÉ', subtitle: 'SYSTÈME', version: 'MASTER AI v5.0',
+    intro_title: 'Bienvenue dans votre nouvelle vie',
+    intro_desc: (accent) => <>Je suis le Maître du Système. Vous désirez le <span className={accent}>Contrôle</span> et le <span className={accent}>Déni</span>. Ici, vous ne pensez pas. Vous <span className="font-bold">Obéissez</span>.</>,
+    btn_start: 'Lancer le Protocole', step1_title: 'Données du Sujet', label_name: 'Nom · Surnom', label_level: 'Intensité · Niveau',
+    label_date: 'Date Cible · Date', label_year: 'Année · YYYY', label_month: 'Mois · Month',
+    step1_ratings_title: 'Zones et Limites',
+    label_nipples: 'Mamelons', label_anal: 'Anal', label_urethra: 'Urètre', label_pain: 'Douleur',
+    label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public',
+    label_service: 'Service', label_sensory: 'Privation Sensorielle',
+    step1_theme_title: 'Thème Visuel', btn_generate: 'Générer', step2_title: ' Calendrier', btn_reset: 'Réinitialiser', btn_download: 'Télécharger',
+    modal_day: 'JOUR', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'APPROUVÉ PAR LE MAÎTRE',
+    warn_title: 'AVERTISSEMENT : CONTENU ADULTE', warn_text1: 'Ce site contient des thèmes BDSM.', warn_text2: 'Accès réservé aux majeurs.', warn_leave: 'Quitter', warn_enter: 'Entrer (18+)'
+  },
+  'ru': {
+    title: 'ПРОТОКОЛ ВОЗДЕРЖАНИЯ', subtitle: 'СИСТЕМА', version: 'MASTER AI v5.0',
+    intro_title: 'Добро пожаловать в новую жизнь',
+    intro_desc: (accent) => <>Я Системный Мастер. Ты жаждешь <span className={accent}>Контроля</span> и <span className={accent}>Отрицания</span>. Здесь ты не думаешь. Ты <span className="font-bold">Повинуешься</span>.</>,
+    btn_start: 'Начать Протокол', step1_title: 'Данные Субъекта', label_name: 'Имя · Ник', label_level: 'Интенсивность · Уровень',
+    label_date: 'Дата · Date', label_year: 'Год · YYYY', label_month: 'Месяц · Month',
+    step1_ratings_title: 'Зоны и Пределы',
+    label_nipples: 'Соски', label_anal: 'Анал', label_urethra: 'Уретра', label_pain: 'Боль',
+    label_humiliation: 'Унижение', label_edging: 'Эджинг', label_bondage: 'Бондаж', label_public: 'Публично',
+    label_service: 'Служение', label_sensory: 'Сенсорная Депривация',
+    step1_theme_title: 'Визуальная Тема', btn_generate: 'Создать', step2_title: ' Календарь', btn_reset: 'Сброс', btn_download: 'Скачать',
+    modal_day: 'ДЕНЬ', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'ОДОБРЕНО МАСТЕРОМ',
+    warn_title: 'ВНИМАНИЕ: 18+', warn_text1: 'Сайт содержит темы BDSM.', warn_text2: 'Доступ только для совершеннолетних.', warn_leave: 'Выйти', warn_enter: 'Войти (18+)'
+  }
+};
+
+// --- 擴充的任務資料庫 (含多語言) ---
+const TASKS_DB = [
+  // General
+  { 
+    tags: ["general"], intensity: "soft",
+    text_zh: "全天佩戴：今天只需習慣它的存在，感受它的重量。",
+    text_en: "24h Wear: Just get used to its existence and feel the weight.",
+    text_jp: "終日着用：今日はその存在に慣れ、重みを感じるだけでいい。",
+    text_kr: "24시간 착용: 존재에 익숙해지고 무게를 느껴보세요."
+  },
+  { 
+    tags: ["general", "pain"], intensity: "soft",
+    text_zh: "冷水澡：佩戴著鎖進行 5 分鐘冷水淋浴，保持冷靜。",
+    text_en: "Cold Shower: Take a 5-min cold shower while locked. Stay calm.",
+    text_jp: "冷水シャワー：ロックしたまま5分間の冷水シャワーを浴びる。",
+    text_kr: "냉수 샤워: 착용한 채로 5분간 냉수 샤워를 하세요. 평정심을 유지하세요."
+  },
+  { 
+    tags: ["general", "mind"], intensity: "soft",
+    text_zh: "早安儀式：起床後立刻檢查鎖具，對鏡子說『我是鎖的奴隸』。",
+    text_en: "Morning Ritual: Check the lock immediately and tell the mirror: 'I am a slave to the lock.'",
+    text_jp: "朝の儀式：起床後すぐにロックを確認し、鏡に向かって「私は鍵の奴隷です」と言う。",
+    text_kr: "아침 의식: 일어나자마자 자물쇠를 확인하고 거울을 보며 말하세요: '나는 자물쇠의 노예입니다.'"
+  },
+  { 
+    tags: ["general"], intensity: "medium",
+    text_zh: "睡眠訓練：今晚必須佩戴著入睡，不允許半夜偷偷解開。",
+    text_en: "Sleep Training: Must sleep locked tonight. No unlocking allowed.",
+    text_jp: "睡眠訓練：今夜はロックしたまま眠ること。夜中に外すことは許されない。",
+    text_kr: "수면 훈련: 오늘 밤은 착용한 채로 자야 합니다. 해제는 허용되지 않습니다."
+  },
+
+  // Edging
+  { 
+    tags: ["edging"], intensity: "medium",
+    text_zh: "邊緣控制：解鎖 15 分鐘，只能 Edge 3 次，嚴禁發射，重新上鎖。",
+    text_en: "Edge Control: Unlock for 15 mins, Edge 3 times only. NO release. Relock.",
+    text_jp: "寸止め管理：15分間解錠。3回寸止めを行う。射精厳禁。再施錠。"
+  },
+  { 
+    tags: ["edging"], intensity: "hard",
+    text_zh: "寸止地獄：觀看 20 分鐘影片並自慰，在快高潮前 1 秒停手並立刻上鎖。",
+    text_en: "Edging Hell: Watch porn for 20 mins, stop 1 sec before orgasm and lock immediately.",
+    text_jp: "寸止め地獄：20分間動画を見てオナニーし、イく1秒前に止めて即座に施錠せよ。"
+  },
+
+  // Nipples
+  { 
+    tags: ["nipples"], intensity: "soft",
+    text_zh: "敏感喚醒：佩戴鎖具時，用手指捏住乳頭轉圈各 100 下。",
+    text_en: "Nipple Wake-up: Pinch and rotate nipples 100 times each while locked.",
+    text_jp: "乳首開発：ロック中、乳首を指でつまんで各100回回す。"
+  },
+  { 
+    tags: ["nipples", "pain"], intensity: "medium",
+    text_zh: "夾子刑罰：使用夾子夾住乳頭持續 10 分鐘，期間不得發出聲音。",
+    text_en: "Clamp Punishment: Clamp nipples for 10 mins. Silence required.",
+    text_jp: "洗濯バサミ刑：10分間乳首を洗濯バサミで挟む。その間、声を上げてはならない。"
+  },
+
+  // Anal
+  { 
+    tags: ["anal"], intensity: "medium",
+    text_zh: "後庭感知：在籠中狀態下，嘗試放入一根手指或是小型塞子，適應 10 分鐘。",
+    text_en: "Anal Sense: Insert a finger or small plug for 10 mins while locked.",
+    text_jp: "アナル知覚：ロック状態で指または小さなプラグを挿入し、10分間慣らす。"
+  },
+  { 
+    tags: ["anal"], intensity: "hard",
+    text_zh: "異物充盈：佩戴中型塞子進行日常活動（如做家事、看書）30 分鐘。",
+    text_en: "Plugged Life: Wear a medium plug for 30 mins during daily activities.",
+    text_jp: "プラグ生活：中サイズのプラグを装着し、家事や読書などの日常活動を30分行う。"
+  },
+
+  // Pain
+  { 
+    tags: ["pain", "general"], intensity: "medium",
+    text_zh: "體能獻祭：全裸深蹲 50 下，讓籠子拍打你的大腿內側。",
+    text_en: "Fitness Sacrifice: 50 naked squats. Feel the cage hit your thighs.",
+    text_jp: "肉体奉納：全裸でスクワット50回。貞操帯が太ももを打つのを感じろ。"
+  },
+  { 
+    tags: ["pain"], intensity: "hard",
+    text_zh: "彈力懲罰：用橡皮筋或彈擊籠身 20 下，每一聲都是對慾望的告解。",
+    text_en: "Elastic Punishment: Snap a rubber band on the cage 20 times.",
+    text_jp: "ゴムパッチン刑：輪ゴムで檻を20回弾く。その音は欲望への告解だ。"
+  },
+
+  // Humiliation
+  { 
+    tags: ["humiliation"], intensity: "hard",
+    text_zh: "視覺羞恥：穿著能透出鎖形狀的褲子去倒垃圾或超商買水。",
+    text_en: "Visual Shame: Wear pants that show the outline of the cage to a store.",
+    text_jp: "視覚的羞恥：貞操帯の形が透けるズボンを履いてコンビニに行く。"
+  },
+  { 
+    tags: ["humiliation", "mind"], intensity: "medium",
+    text_zh: "自我貶低：在身上用口紅寫下『Property (財產)』，拍照存檔(無需上傳)。",
+    text_en: "Self-Degradation: Write 'Property' on your body with lipstick. Take a photo.",
+    text_jp: "自己卑下：口紅で体に「Property（所有物）」と書き、写真を撮る。"
+  },
+
+  // Urethra
+  { 
+    tags: ["urethra"], intensity: "medium",
+    text_zh: "飲水控制：大量飲水後忍耐 45 分鐘，感受膀胱與鎖具的雙重壓力。",
+    text_en: "Water Control: Drink water and hold for 45 mins. Feel the pressure.",
+    text_jp: "飲水管理：大量に水を飲んだ後、45分間我慢する。膀胱とロックの圧力を感じろ。"
+  },
+  { 
+    tags: ["urethra", "general"], intensity: "soft",
+    text_zh: "坐姿排泄：從今天起，這一個月內你只能像女生一樣坐著尿尿。",
+    text_en: "Sit Down: From today, you must sit down to pee for the whole month.",
+    text_jp: "座りション：今日から一ヶ月間、女性のように座って用を足すこと。"
+  },
+
+  // Bondage (束縛)
+  { 
+    tags: ["bondage"], intensity: "medium",
+    text_zh: "繩縛靜坐：將雙手反綁在背後，跪坐 20 分鐘，不准移動。",
+    text_en: "Rope Meditation: Tie hands behind back, kneel for 20 mins. No moving.",
+    text_jp: "縄縛静座：両手を後ろ手に縛り、20分間正座する。動いてはならない。"
+  },
+  { 
+    tags: ["bondage"], intensity: "hard",
+    text_zh: "四肢剝奪：睡覺時必須戴上眼罩並稍微束縛雙手，體驗無助感。",
+    text_en: "Limb Deprivation: Sleep with blindfold and lightly bound hands.",
+    text_jp: "四肢剥奪：目隠しをし、両手を軽く縛って眠り、無力感を味わう。"
+  },
+
+  // Public (露出)
+  { 
+    tags: ["public"], intensity: "hard",
+    text_zh: "陽台放風：在隱密的陽台或窗邊全裸佩戴鎖具站立 5 分鐘。",
+    text_en: "Balcony Air: Stand naked with lock on a secluded balcony for 5 mins.",
+    text_jp: "ベランダ放置：人目のないベランダか窓際で、全裸でロックを着けて5分立つ。"
+  },
+  { 
+    tags: ["public", "humiliation"], intensity: "medium",
+    text_zh: "真空散步：不穿內褲，只穿寬鬆褲子在住家附近散步 10 分鐘。",
+    text_en: "Commando Walk: No underwear, loose pants. Walk outside for 10 mins.",
+    text_jp: "ノーパン散歩：下着を履かず、緩いズボンだけで近所を10分散歩する。"
+  },
+
+  // Service (侍奉)
+  { 
+    tags: ["service"], intensity: "soft",
+    text_zh: "籠具清潔：用牙刷仔細清潔籠具的每一個縫隙，像對待聖物一樣。",
+    text_en: "Cage Cleaning: Clean every gap of the cage with a toothbrush like a holy relic.",
+    text_jp: "檻の清掃：歯ブラシで檻の隙間を丁寧に掃除する。聖遺物のように扱うこと。"
+  },
+  { 
+    tags: ["service"], intensity: "medium",
+    text_zh: "跪姿擦地：全裸佩戴鎖具，用抹布跪著擦拭家裡的地板。",
+    text_en: "Kneeling Clean: Clean the floor with a cloth while naked and locked.",
+    text_jp: "膝立ち掃除：全裸ロック状態で、膝をついて床を雑巾掛けする。"
+  },
+
+  // NEW: Sensory (感官剝奪 - Replaces Sissy)
+  { 
+    tags: ["sensory"], intensity: "medium",
+    text_zh: "黑暗晚餐：戴上眼罩進食晚餐，全程不得發出聲音。",
+    text_en: "Blind Dinner: Eat dinner while blindfolded. Absolute silence required.",
+    text_jp: "暗闇の夕食：目隠しをして夕食をとる。終始音を立ててはならない。",
+    text_kr: "블라인드 디너: 눈가리개를 하고 저녁 식사를 하세요. 절대 정숙."
+  },
+  { 
+    tags: ["sensory", "bondage"], intensity: "hard",
+    text_zh: "感官隔離：眼罩+耳塞，在床上靜躺 30 分鐘，只能感受下體的束縛。",
+    text_en: "Sensory Iso: Blindfold + Earplugs. Lie still for 30 mins. Focus only on the lock.",
+    text_jp: "感覚遮断：目隠し＋耳栓。ベッドで30分間静止し、下半身の拘束だけを感じる。",
+    text_kr: "감각 차단: 눈가리개 + 귀마개. 30분 동안 가만히 누워 자물쇠의 감각에만 집중하세요."
+  }
+];
+
+// --- Themes Configuration ---
+const THEMES = {
+  classic: { 
+    id: 'classic', 
+    name: '經典枷鎖 (Classic)', 
+    colors: {
+      bg: 'bg-stone-950', text: 'text-stone-200', border: 'border-stone-800',
+      accent: 'text-red-600', accentBg: 'bg-red-900', card: 'bg-stone-900',
+      cardHover: 'hover:border-stone-600', modal: 'bg-stone-900 border-red-900', button: 'bg-red-800 hover:bg-red-700'
+    }
+  },
+  cyber: { 
+    id: 'cyber', 
+    name: '賽博監禁 (Cyber)', 
+    colors: {
+      bg: 'bg-black', text: 'text-cyan-50', border: 'border-cyan-900',
+      accent: 'text-fuchsia-500', accentBg: 'bg-fuchsia-900', card: 'bg-slate-900',
+      cardHover: 'hover:border-fuchsia-500 hover:shadow-[0_0_15px_rgba(217,70,239,0.3)]',
+      modal: 'bg-black border-fuchsia-600', button: 'bg-fuchsia-700 hover:bg-fuchsia-600'
+    }
+  },
+  industrial: { 
+    id: 'industrial', 
+    name: '重工業 (Industrial)', 
+    colors: {
+      bg: 'bg-neutral-900', text: 'text-orange-100', border: 'border-orange-900/50',
+      accent: 'text-orange-500', accentBg: 'bg-orange-900', card: 'bg-neutral-800',
+      cardHover: 'hover:border-orange-500', modal: 'bg-neutral-800 border-orange-600', button: 'bg-orange-700 hover:bg-orange-600'
+    }
+  },
+  clinical: { 
+    id: 'clinical', 
+    name: '臨床實驗 (Clinical)', 
+    colors: {
+      bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-300',
+      accent: 'text-rose-600', accentBg: 'bg-rose-200', card: 'bg-white shadow-sm',
+      cardHover: 'hover:border-rose-400 hover:shadow-md', modal: 'bg-white border-rose-500', button: 'bg-slate-800 hover:bg-slate-700'
+    }
+  },
+  royal: { 
+    id: 'royal', 
+    name: '皇室調教 (Royal)', 
+    colors: {
+      bg: 'bg-slate-900', text: 'text-slate-200', border: 'border-yellow-900/30',
+      accent: 'text-yellow-500', accentBg: 'bg-yellow-900/40', card: 'bg-slate-800',
+      cardHover: 'hover:border-yellow-500/50', modal: 'bg-slate-800 border-yellow-600', button: 'bg-indigo-900 hover:bg-indigo-800'
+    }
+  },
+};
+
+const LockCalendarPro = () => {
+  const [verified, setVerified] = useState(false);
+  const [step, setStep] = useState(0); 
+  const [selectedDay, setSelectedDay] = useState(null); 
+  const exportRef = useRef(null); 
+  const [libLoaded, setLibLoaded] = useState(false);
+  const [lang, setLang] = useState('zh-TW');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.async = true;
+    script.onload = () => setLibLoaded(true);
+    document.body.appendChild(script);
+    return () => { if(document.body.contains(script)) document.body.removeChild(script); };
+  }, []);
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; 
+
+  const [userData, setUserData] = useState({
+    name: '', level: 'medium', year: currentYear, month: currentMonth, theme: 'classic',
+    prefs: {
+      nipples: 1, anal: 1, urethra: 1, pain: 1, humiliation: 1, edging: 1,
+      bondage: 1, public: 1, service: 1, sensory: 1 // Sensory replaced Sissy
+    }
+  });
+
+  const [calendar, setCalendar] = useState([]);
+
+  // --- Helpers ---
+  const currentTheme = THEMES[userData.theme].colors;
+  const t = TRANSLATIONS[lang]; 
+
+  const handlePrefChange = (key, val) => setUserData(prev => ({ ...prev, prefs: { ...prev.prefs, [key]: val } }));
+
+  const getTaskIcon = (tags, type) => {
+    const props = { className: `w-full h-full opacity-20 ${currentTheme.text}` };
+    if (type === 'start' || type === 'end') return <Lock {...props} className={`w-full h-full opacity-20 ${currentTheme.accent}`} />;
+    if (type === 'check') return <ShieldAlert {...props} />;
+    
+    if (tags.includes('nipples')) return <Disc {...props} />;
+    if (tags.includes('anal')) return <Activity {...props} />;
+    if (tags.includes('urethra')) return <Droplet {...props} />;
+    if (tags.includes('pain')) return <Zap {...props} />;
+    if (tags.includes('humiliation')) return <Eye {...props} />;
+    if (tags.includes('edging')) return <Flame {...props} />;
+    if (tags.includes('mind')) return <Ghost {...props} />;
+    if (tags.includes('bondage')) return <Anchor {...props} />;
+    if (tags.includes('public')) return <Globe {...props} />;
+    if (tags.includes('service')) return <Ruler {...props} />;
+    if (tags.includes('sensory')) return <Headphones {...props} />;
+    
+    return <Smile {...props} />;
+  };
+
+  const getTaskText = (taskObj) => {
+     // Explicit fallbacks to ensure text exists
+     if (lang === 'en') return taskObj.text_en || taskObj.text_zh;
+     if (lang === 'jp') return taskObj.text_jp || taskObj.text_zh;
+     if (lang === 'kr') return taskObj.text_kr || taskObj.text_en || taskObj.text_zh;
+     if (lang === 'de') return taskObj.text_en || taskObj.text_zh; // Fallback to EN for new langs
+     if (lang === 'es') return taskObj.text_en || taskObj.text_zh; // Fallback to EN
+     if (lang === 'fr') return taskObj.text_en || taskObj.text_zh; // Fallback to EN
+     if (lang === 'ru') return taskObj.text_en || taskObj.text_zh; // Fallback to EN
+     return taskObj.text_zh;
+  };
+
+  // --- Logic: Unique Task Generation ---
+  const generateProtocol = () => {
+    const daysInMonth = new Date(userData.year, userData.month, 0).getDate();
+    let firstDayIndex = new Date(userData.year, userData.month - 1, 1).getDay(); 
+    let offset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
+
+    // 1. Create a large weighted pool
+    let weightedPool = [];
+    // General tasks are always included
+    const baseTasks = TASKS_DB.filter(t => t.tags.includes('general'));
+    weightedPool.push(...baseTasks); 
+
+    // Add tasks based on prefs
+    Object.entries(userData.prefs).forEach(([key, rating]) => {
+      if (rating > 1) {
+        const tagTasks = TASKS_DB.filter(t => t.tags.includes(key));
+        // Add multiple copies to increase probability in the shuffle
+        const multiplier = rating; 
+        for (let i = 0; i < multiplier; i++) {
+          weightedPool.push(...tagTasks);
+        }
+      }
+    });
+
+    // Filter by intensity
+    weightedPool = weightedPool.filter(task => {
+      if (userData.level === 'soft') return task.intensity === 'soft';
+      if (userData.level === 'medium') return task.intensity !== 'hard';
+      return true;
+    });
+
+    // Fallback if pool is too small
+    if (weightedPool.length < 5) weightedPool = TASKS_DB.filter(t => t.tags.includes('general'));
+
+    // 2. Shuffle the weighted pool completely
+    const shuffledPool = [...weightedPool].sort(() => Math.random() - 0.5);
+
+    // 3. Select unique tasks
+    const selectedTasks = [];
+    const usedTexts = new Set();
+    
+    for (const task of shuffledPool) {
+      // Use text_zh as unique ID for simplicity since it always exists
+      if (!usedTexts.has(task.text_zh)) {
+        selectedTasks.push(task);
+        usedTexts.add(task.text_zh);
+      }
+      if (selectedTasks.length >= daysInMonth) break;
+    }
+
+    // If we still don't have enough unique tasks (rare case), fill with randoms
+    while (selectedTasks.length < daysInMonth) {
+       selectedTasks.push(shuffledPool[Math.floor(Math.random() * shuffledPool.length)]);
+    }
+
+    // 4. Build Days (No fixed start/end tasks)
+    const days = [];
+    for (let k = 0; k < offset; k++) {
+      days.push({ day: null, type: 'empty' });
+    }
+
+    // Shuffle selected unique tasks again to distribute intensity
+    const finalTaskOrder = selectedTasks.sort(() => Math.random() - 0.5);
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      let taskObj = finalTaskOrder[i - 1]; // Use index
+      let type = "normal";
+      
+      // Optional: Mark special days visually but keep random tasks
+      if (i === 1) type = "start";
+      else if (i === daysInMonth) type = "end";
+      else if (i % 7 === 0) type = "check";
+
+      days.push({ 
+        day: i, 
+        task: getTaskText(taskObj), 
+        tags: taskObj.tags || ['general'], 
+        type 
+      });
+    }
+    setCalendar(days);
+    setStep(2);
+  };
+
+  const downloadImage = async () => {
+    if (!exportRef.current || !window.html2canvas) { alert("Loading..."); return; }
+    try {
+      const canvas = await window.html2canvas(exportRef.current, {
+        scale: 2, backgroundColor: userData.theme === 'clinical' ? '#f8fafc' : '#0c0a09',
+        useCORS: true, logging: false
+      });
+      const link = document.createElement('a');
+      link.download = `LockCalendar_${userData.year}_${userData.month}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    } catch (err) { console.error(err); alert("Failed."); }
+  };
+
+  if (!verified) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-95 text-red-600 font-sans">
+        <div className="bg-stone-900 border-2 border-red-800 p-8 rounded-lg max-w-md text-center shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+          <div className="text-6xl mb-6 animate-pulse">🔞</div>
+          <h1 className="text-3xl font-bold mb-4 tracking-widest uppercase">{t.warn_title}</h1>
+          <div className="text-stone-400 text-sm text-left mb-6 space-y-2 border-t border-b border-stone-700 py-4">
+            <p>{t.warn_text1}</p>
+            <p>{t.warn_text2}</p>
+          </div>
+          <div className="flex gap-4 justify-center">
+            <button onClick={() => window.location.href = 'https://www.google.com'} className="px-6 py-2 border border-stone-600 text-stone-400 hover:bg-stone-800 rounded transition-colors">{t.warn_leave}</button>
+            <button onClick={() => setVerified(true)} className="px-6 py-2 bg-red-900 text-white font-bold rounded hover:bg-red-700 hover:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-all">{t.warn_enter}</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const RatingControl = ({ label, value, onChange, icon }) => (
+    <div className={`${currentTheme.card} ${currentTheme.border} border p-4 rounded-lg flex flex-col gap-3 transition-colors`}>
+      <div className={`flex items-center gap-2 font-bold ${currentTheme.text} opacity-90 text-sm md:text-base`}>
+        {icon} {label}
+      </div>
+      <div className="flex justify-between items-center bg-black/20 rounded p-1">
+        {[1, 2, 3, 4, 5].map(num => (
+          <button key={num} onClick={() => onChange(num)}
+            className={`w-8 h-8 rounded text-sm font-bold transition-all ${value === num ? `${currentTheme.button} text-white shadow-lg` : `${currentTheme.text} opacity-50 hover:opacity-100 hover:bg-white/10`}`}>
+            {num}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={`min-h-screen ${currentTheme.bg} ${currentTheme.text} font-sans pb-20 overflow-x-hidden transition-colors duration-500`}>
+      <header className={`backdrop-blur-md sticky top-0 z-40 border-b ${currentTheme.border} p-4 bg-black/20`}>
+        <div className="max-w-4xl mx-auto flex justify-between items-center">
+          <div className={`flex items-center gap-2 ${currentTheme.accent}`}>
+            <Lock className="w-6 h-6" />
+            <span className={`font-black tracking-widest text-lg ${currentTheme.text}`}>{t.title} <span className="text-xs font-normal opacity-70">{t.subtitle}</span></span>
+          </div>
+          <div className="flex items-center gap-4">
+             <select value={lang} onChange={(e) => setLang(e.target.value)} className={`bg-transparent border ${currentTheme.border} text-xs p-1 rounded ${currentTheme.text} opacity-70 hover:opacity-100 focus:outline-none`}>
+               <option value="zh-TW">繁體中文</option>
+               <option value="en">English</option>
+               <option value="jp">日本語</option>
+               <option value="kr">한국어</option>
+               <option value="de">Deutsch</option>
+               <option value="fr">Français</option>
+               <option value="es">Español</option>
+               <option value="ru">Русский</option>
+             </select>
+             <div className="text-xs opacity-50 font-mono hidden sm:block">{t.version}</div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto p-4 mt-8">
+        {step === 0 && (
+          <div className="max-w-2xl mx-auto text-center space-y-8 animate-fade-in">
+            <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center border-2 shadow-[0_0_30px_rgba(0,0,0,0.2)] ${currentTheme.card} ${currentTheme.border}`}>
+              <Key className={`w-10 h-10 ${currentTheme.accent}`} />
+            </div>
+            <div className="space-y-4"><h2 className="text-3xl font-bold">{t.intro_title}</h2><p className="opacity-70 leading-relaxed text-lg">{t.intro_desc(currentTheme.accent)}</p></div>
+            <button onClick={() => setStep(1)} className={`group relative px-8 py-4 ${currentTheme.card} font-bold tracking-widest overflow-hidden rounded border ${currentTheme.border} hover:border-current transition-all`}>
+              <span className={`relative z-10 flex items-center gap-2 ${currentTheme.accent}`}>{t.btn_start} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/></span>
+            </button>
+          </div>
+        )}
+
+        {step === 1 && (
+          <div className="max-w-2xl mx-auto space-y-6 animate-slide-up">
+            <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Lock className="w-4 h-4"/> {t.step1_title}</h3>
+              <div className="space-y-4">
+                <div><label className="text-xs opacity-60 mb-1 block">{t.label_name}</label><input type="text" value={userData.name} onChange={e => setUserData({...userData, name: e.target.value})} className={`w-full bg-black/20 border ${currentTheme.border} rounded p-3 focus:outline-none focus:border-current`} placeholder="..." /></div>
+                <div><label className="text-xs opacity-60 mb-2 block">{t.label_level}</label><div className="grid grid-cols-3 gap-2">{['soft', 'medium', 'hard'].map(l => (<button key={l} onClick={() => setUserData({...userData, level: l})} className={`py-2 rounded border text-sm uppercase font-bold transition-all ${userData.level === l ? `${currentTheme.button} text-white border-transparent` : `bg-transparent ${currentTheme.border} opacity-60`}`}>{l}</button>))}</div></div>
+              </div>
+            </div>
+
+            <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
+               <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Calendar className="w-4 h-4"/> {t.label_date}</h3>
+               <div className="grid grid-cols-2 gap-4">
+                 <div><label className="text-xs opacity-60 mb-1 block">{t.label_year}</label><input type="number" value={userData.year} onChange={e => setUserData({...userData, year: parseInt(e.target.value)})} className={`w-full bg-black/20 border ${currentTheme.border} rounded p-3 focus:outline-none focus:border-current`} /></div>
+                 <div><label className="text-xs opacity-60 mb-1 block">{t.label_month}</label><input type="number" min="1" max="12" value={userData.month} onChange={e => setUserData({...userData, month: parseInt(e.target.value)})} className={`w-full bg-black/20 border ${currentTheme.border} rounded p-3 focus:outline-none focus:border-current`} /></div>
+               </div>
+            </div>
+
+            <div>
+               <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Activity className="w-4 h-4"/> {t.step1_ratings_title}</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <RatingControl label={t.label_nipples} icon={<Disc className="w-4 h-4"/>} value={userData.prefs.nipples} onChange={v => handlePrefChange('nipples', v)} />
+                 <RatingControl label={t.label_anal} icon={<Eye className="w-4 h-4"/>} value={userData.prefs.anal} onChange={v => handlePrefChange('anal', v)} />
+                 <RatingControl label={t.label_urethra} icon={<Droplet className="w-4 h-4"/>} value={userData.prefs.urethra} onChange={v => handlePrefChange('urethra', v)} />
+                 <RatingControl label={t.label_pain} icon={<Zap className="w-4 h-4"/>} value={userData.prefs.pain} onChange={v => handlePrefChange('pain', v)} />
+                 <RatingControl label={t.label_humiliation} icon={<Ghost className="w-4 h-4"/>} value={userData.prefs.humiliation} onChange={v => handlePrefChange('humiliation', v)} />
+                 <RatingControl label={t.label_edging} icon={<Flame className="w-4 h-4"/>} value={userData.prefs.edging} onChange={v => handlePrefChange('edging', v)} />
+                 <RatingControl label={t.label_bondage} icon={<Anchor className="w-4 h-4"/>} value={userData.prefs.bondage} onChange={v => handlePrefChange('bondage', v)} />
+                 <RatingControl label={t.label_public} icon={<Globe className="w-4 h-4"/>} value={userData.prefs.public} onChange={v => handlePrefChange('public', v)} />
+                 <RatingControl label={t.label_service} icon={<Ruler className="w-4 h-4"/>} value={userData.prefs.service} onChange={v => handlePrefChange('service', v)} />
+                 <RatingControl label={t.label_sensory} icon={<Headphones className="w-4 h-4"/>} value={userData.prefs.sensory} onChange={v => handlePrefChange('sensory', v)} />
+               </div>
+            </div>
+
+            <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Palette className="w-4 h-4"/> {t.step1_theme_title}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Object.values(THEMES).map(th => (
+                  <button key={th.id} onClick={() => setUserData({...userData, theme: th.id})} className={`p-3 rounded border text-left flex items-center gap-3 transition-all ${userData.theme === th.id ? `${currentTheme.border} ring-1 ring-offset-2 ring-offset-transparent ring-current` : 'border-transparent opacity-50 hover:opacity-100'}`} style={{ backgroundColor: th.id === 'clinical' ? '#f1f5f9' : '#1c1917' }} >
+                    <div className={`w-4 h-4 rounded-full ${th.colors.accentBg}`}></div><span className={th.id === 'clinical' ? 'text-slate-800' : 'text-white'}>{th.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button onClick={generateProtocol} disabled={!userData.name} className={`w-full py-4 ${currentTheme.button} text-white font-bold rounded shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 mt-4`}>{t.btn_generate} <ChevronRight className="w-4 h-4"/></button>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="animate-slide-up relative">
+            <div className={`flex flex-col md:flex-row justify-between items-end mb-6 border-b ${currentTheme.border} pb-4 gap-4`}>
+              <div><h2 className="text-3xl font-black uppercase">{userData.name} {t.step2_title}</h2><div className="flex gap-4 text-sm opacity-60 mt-1 font-mono"><span>{userData.year} / {userData.month}</span><span>Lv: {userData.level.toUpperCase()}</span></div></div>
+              <div className="flex gap-2">
+                 <button onClick={() => setStep(1)} className={`p-2 border ${currentTheme.border} opacity-60 hover:opacity-100 rounded`}><RefreshCcw className="w-4 h-4" /></button>
+                 <button onClick={downloadImage} disabled={!libLoaded} className={`px-4 py-2 ${currentTheme.card} border ${currentTheme.border} font-bold rounded flex items-center gap-2 text-sm hover:brightness-110 transition-all disabled:opacity-50`}><Download className="w-4 h-4" /> {t.btn_download}</button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 md:gap-3">
+              {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (<div key={d} className="text-center text-xs opacity-40 font-mono py-2">{d}</div>))}
+              {calendar.map((day, idx) => (
+                day.type === 'empty' ? (<div key={`empty-${idx}`} className="hidden md:block"></div>) : (
+                  <div key={day.day} onClick={() => setSelectedDay(day)} className={`relative p-2 md:p-3 rounded border transition-all cursor-pointer group flex flex-col min-h-[120px] ${currentTheme.card} ${currentTheme.border} ${currentTheme.cardHover}`}>
+                    <div className="absolute -right-4 -bottom-4 w-24 h-24 transform rotate-12 opacity-5 pointer-events-none">{getTaskIcon(day.tags, day.type)}</div>
+                    <div className="flex justify-between items-start z-10 mb-2">
+                      <span className={`text-lg md:text-xl font-black font-mono ${day.type === 'start' || day.type === 'end' ? currentTheme.accent : 'opacity-40 group-hover:opacity-80'}`}>{String(day.day).padStart(2, '0')}</span>
+                      {day.type === 'start' && <Lock className={`w-4 h-4 ${currentTheme.accent}`} />}
+                      {day.type === 'end' && <Key className={`w-4 h-4 ${currentTheme.accent}`} />}
+                      {day.type === 'check' && <ShieldAlert className="w-4 h-4 text-yellow-600" />}
+                    </div>
+                    <p className="text-[11px] md:text-xs opacity-70 leading-relaxed z-10 break-words whitespace-normal">{day.task}</p>
+                  </div>
+                )
+              ))}
+            </div>
+
+            {selectedDay && selectedDay.type !== 'empty' && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setSelectedDay(null)}>
+                <div className={`${currentTheme.modal} border-2 p-6 rounded-lg max-w-sm w-full shadow-2xl relative ${currentTheme.bg}`} onClick={e => e.stopPropagation()}>
+                  <button onClick={() => setSelectedDay(null)} className="absolute top-3 right-3 opacity-50 hover:opacity-100"><X className="w-5 h-5"/></button>
+                  <div className="flex justify-center mb-6"><div className={`w-20 h-20 rounded-full bg-black/20 flex items-center justify-center p-4 ${currentTheme.border} border`}>{getTaskIcon(selectedDay.tags, selectedDay.type)}</div></div>
+                  <h3 className={`${currentTheme.accent} font-mono text-lg font-bold mb-4 border-b ${currentTheme.border} pb-2 text-center`}>{userData.year}.{userData.month}.{String(selectedDay.day).padStart(2,'0')}</h3>
+                  <p className={`text-lg leading-relaxed font-medium ${currentTheme.text} text-center`}>{selectedDay.task}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </main>
+
+      <div className="absolute top-0 left-[-9999px]">
+          <div ref={exportRef} className={`w-[1920px] h-[1080px] ${currentTheme.bg} ${currentTheme.text} px-16 py-12 flex flex-col justify-between border-[20px] ${currentTheme.border} relative`}>
+            <div className="absolute inset-0 opacity-10" style={{backgroundImage: `radial-gradient(circle at 50% 50%, currentColor 0%, transparent 50%)`}}></div>
+            <div className={`flex justify-between items-start border-b-4 ${currentTheme.border} pb-6 z-10`}>
+              <div><h1 className="text-6xl font-black tracking-[0.2em] mb-4">{t.title}</h1><div className="flex gap-8 text-2xl opacity-60 font-mono"><span>SUBJECT: <span className="font-bold opacity-100">{userData.name}</span></span><span>DATE: {userData.year} / {userData.month}</span></div></div>
+              <div className="text-right"><Lock className={`w-20 h-20 ${currentTheme.accent} mb-2`} /><div className="text-xl font-mono opacity-50">{t.subtitle}</div></div>
+            </div>
+            <div className="grid grid-cols-7 gap-4 mb-2 mt-4 px-2 opacity-50 font-mono text-lg z-10">{['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center">{d}</div>)}</div>
+            <div className="grid grid-cols-7 gap-4 flex-grow px-2 z-10 content-start">
+              {calendar.map((day, idx) => (
+                day.type === 'empty' ? (<div key={`exp-empty-${idx}`} className="border-transparent"></div>) : (
+                  <div key={day.day} className={`border ${currentTheme.border} p-3 relative flex flex-col h-full overflow-hidden ${day.type === 'start' || day.type === 'end' ? 'bg-black/10' : ''}`}>
+                    <div className="absolute -right-2 -bottom-2 w-16 h-16 transform rotate-12 opacity-[0.07]">{getTaskIcon(day.tags, day.type)}</div>
+                    <span className={`text-xl font-bold font-mono mb-1 ${day.type === 'check' ? 'text-yellow-500' : 'opacity-40'}`}>{day.day}</span>
+                    <p className="text-[11px] leading-tight opacity-90 relative z-10 whitespace-normal break-words font-medium">{day.task}</p>
+                  </div>
+                )
+              ))}
+            </div>
+            <div className={`flex justify-between items-end border-t ${currentTheme.border} pt-6 z-10`}>
+              <div className="opacity-50 font-mono text-lg w-1/2 whitespace-pre-wrap">{t.footer_sign}</div>
+              <div className="text-right"><div className="text-4xl font-black opacity-80">{t.footer_approve}</div></div>
+            </div>
+          </div>
+      </div>
+    </div>
+  );
+};
+
+export default LockCalendarPro;
