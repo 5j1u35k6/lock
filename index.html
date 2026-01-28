@@ -443,6 +443,9 @@
             if(window.html2canvas) setLibLoaded(true);
           }, []);
 
+          // Safe style for export node (GitHub Pages Jekyll Fix)
+          const exportBgStyle = { backgroundImage: `radial-gradient(circle at 50% 50%, currentColor 0%, transparent 50%)` };
+
           const now = new Date();
           const currentYear = now.getFullYear();
           const currentMonth = now.getMonth() + 1; 
@@ -702,11 +705,14 @@
                     <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Palette className="w-4 h-4"/> {t.step1_theme_title}</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {Object.values(THEMES).map(th => (
-                          <button key={th.id} onClick={() => setUserData({...userData, theme: th.id})} className={`p-3 rounded border text-left flex items-center gap-3 transition-all ${userData.theme === th.id ? `${currentTheme.border} ring-1 ring-offset-2 ring-offset-transparent ring-current` : 'border-transparent opacity-50 hover:opacity-100'}`} style={{ backgroundColor: th.id === 'clinical' ? '#f1f5f9' : '#1c1917' }} >
-                            <div className={`w-4 h-4 rounded-full ${th.colors.accentBg}`}></div><span className={th.id === 'clinical' ? 'text-slate-800' : 'text-white'}>{th.name}</span>
-                          </button>
-                        ))}
+                        {Object.values(THEMES).map(th => {
+                          const btnStyle = { backgroundColor: th.id === 'clinical' ? '#f1f5f9' : '#1c1917' };
+                          return (
+                            <button key={th.id} onClick={() => setUserData({...userData, theme: th.id})} className={`p-3 rounded border text-left flex items-center gap-3 transition-all ${userData.theme === th.id ? `${currentTheme.border} ring-1 ring-offset-2 ring-offset-transparent ring-current` : 'border-transparent opacity-50 hover:opacity-100'}`} style={btnStyle} >
+                              <div className={`w-4 h-4 rounded-full ${th.colors.accentBg}`}></div><span className={th.id === 'clinical' ? 'text-slate-800' : 'text-white'}>{th.name}</span>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -758,7 +764,7 @@
 
               <div className="absolute top-0 left-[-9999px]">
                   <div ref={exportRef} className={`w-[1920px] h-[1080px] ${currentTheme.bg} ${currentTheme.text} px-16 py-12 flex flex-col justify-between border-[20px] ${currentTheme.border} relative`}>
-                    <div className="absolute inset-0 opacity-10" style={{backgroundImage: `radial-gradient(circle at 50% 50%, currentColor 0%, transparent 50%)`}}></div>
+                    <div className="absolute inset-0 opacity-10" style={exportBgStyle}></div>
                     <div className={`flex justify-between items-start border-b-4 ${currentTheme.border} pb-6 z-10`}>
                       <div><h1 className="text-6xl font-black tracking-[0.2em] mb-4">{t.title}</h1><div className="flex gap-8 text-2xl opacity-60 font-mono"><span>SUBJECT: <span className="font-bold opacity-100">{userData.name}</span></span><span>DATE: {userData.year} / {userData.month}</span></div></div>
                       <div className="text-right"><Lock className={`w-20 h-20 ${currentTheme.accent} mb-2`} /><div className="text-xl font-mono opacity-50">{t.subtitle}</div></div>
