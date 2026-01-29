@@ -43,7 +43,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- ICONS ---
+        // --- ICONS (Expanded Set) ---
         const IconBase = ({ d, className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{d}</svg>
         );
@@ -67,14 +67,24 @@
         const Ruler = (p) => <IconBase {...p} d={<><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0l12.6 12.6z"></path><line x1="14.5" y1="5.5" x2="18.5" y2="9.5"></line><line x1="10.5" y1="9.5" x2="14.5" y2="13.5"></line><line x1="6.5" y1="13.5" x2="10.5" y2="17.5"></line></>} />;
         const Headphones = (p) => <IconBase {...p} d={<><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></>} />;
         const ChevronRight = (p) => <IconBase {...p} d={<><polyline points="9 18 15 12 9 6"></polyline></>} />;
-        const Smile = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></>} />;
+        
+        // New Icons for Variety
+        const Snowflake = (p) => <IconBase {...p} d={<><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><path d="m20 16-4-4 4-4"></path><path d="m4 8 4 4-4 4"></path><path d="m16 4-4 4-4-4"></path><path d="m8 20 4-4 4 4"></path></>} />;
+        const Moon = (p) => <IconBase {...p} d={<><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></>} />;
+        const Sun = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></>} />;
+        const Footprints = (p) => <IconBase {...p} d={<><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 11 3.8 11 8c0 1.25-.5 2-1.5 3l-.5.5c-2 1.25-2 3-2 4.5V16"></path><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 13 7.8 13 12c0 1.25.5 2 1.5 3l.5.5c2 1.25 2 3 2 4.5V20"></path></>} />;
+        const Sparkles = (p) => <IconBase {...p} d={<><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"></path></>} />;
+        const Pen = (p) => <IconBase {...p} d={<><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></>} />;
+        const Coffee = (p) => <IconBase {...p} d={<><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></>} />;
+        const Music = (p) => <IconBase {...p} d={<><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></>} />;
+        const Camera = (p) => <IconBase {...p} d={<><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></>} />;
+        const Book = (p) => <IconBase {...p} d={<><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></>} />;
 
         // --- TRANSLATIONS (13 Languages) ---
         const TRANSLATIONS = {
           'zh-TW': {
-            title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'MASTER AI v7.1',
+            title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'MASTER AI v7.3',
             intro_title: '歡迎來到你的新生活',
-            // Updated intro_desc to restore V1.0 text
             intro_desc: (accent) => (
                 <span>
                     我是這裡的系統指導者。你既然來到了這裡，就代表你渴望某種程度的<span className={accent}>控制</span>與<span className={accent}>剝奪</span>。
@@ -94,15 +104,14 @@
             step2_title: '的專屬鎖曆', btn_reset: '重新評估', btn_download: '下載鎖曆', modal_day: 'DAY',
             footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
             warn_title: '警告：成人內容', 
-            // Expanded warning text
             warn_text1: '本網站內容涵蓋成人議題、BDSM（綁縛與調教、支配與臣服、施虐與受虐）以及貞操控制等情節。所有內容僅供成人娛樂與幻想使用。', 
             warn_text2: '依據《兒童及少年福利與權益保障法》第 46 條規定，未滿 18 歲之兒童及少年不得瀏覽本網站內容。進入即代表您已年滿 18 歲，且同意觀看此類內容。', 
             warn_text3: '本計畫中的所有活動應在「安全、理智、知情同意 (SSC)」或「風險認知下的知情同意 (RACK)」原則下進行。請量力而為，若有身體不適請立即停止。本網站不對任何實際執行後果負責。',
             warn_text4: '若您未滿 18 歲，或您所在地區法律禁止此類內容，或者此類內容會讓您感到不適，請立即點擊離開。',
             warn_leave: '離開 (Leave)', warn_enter: '我已年滿 18 歲 (Enter)'
           },
-          'en': { title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'MASTER AI v7.1', intro_title: 'Welcome', intro_desc: (c) => <span>Obey.</span>, btn_start: 'Start', step1_title: 'Subject Data', label_name: 'Name', label_level: 'Level', label_date: 'Date', label_year: 'Year', label_month: 'Month', step1_ratings_title: 'Limits', label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Pain', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensory', step1_theme_title: 'Theme', btn_generate: 'Generate', step2_title: ' Calendar', btn_reset: 'Reset', btn_download: 'Download', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+ ONLY', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Leave', warn_enter: 'Enter' },
-          'jp': { title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'MASTER AI v7.1', intro_title: 'ようこそ', intro_desc: (c) => <span>服従せよ。</span>, btn_start: '開始', step1_title: '基本データ', label_name: '名前', label_level: '強度', label_date: '日付', label_year: '年', label_month: '月', step1_ratings_title: '開発部位', label_nipples: '乳首', label_anal: 'アナル', label_urethra: '尿道', label_pain: '苦痛', label_humiliation: '羞恥', label_edging: '寸止め', label_bondage: '拘束', label_public: '露出', label_service: '奉仕', label_sensory: '感覚遮断', step1_theme_title: 'テーマ', btn_generate: '生成', step2_title: 'の計画', btn_reset: '再設定', btn_download: '保存', footer_sign: '降伏します。', footer_approve: '承認済', warn_title: 'R-18', warn_text1: '成人向けコンテンツ。', warn_text2: '18歳未満禁止。', warn_text3: '退出してください。', warn_text4: '自己責任でお願いします。', warn_leave: '退出', warn_enter: '入場' },
+          'en': { title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'MASTER AI v7.3', intro_title: 'Welcome', intro_desc: (c) => <span>Obey.</span>, btn_start: 'Start', step1_title: 'Subject Data', label_name: 'Name', label_level: 'Level', label_date: 'Date', label_year: 'Year', label_month: 'Month', step1_ratings_title: 'Limits', label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Pain', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensory', step1_theme_title: 'Theme', btn_generate: 'Generate', step2_title: ' Calendar', btn_reset: 'Reset', btn_download: 'Download', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+ ONLY', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Leave', warn_enter: 'Enter' },
+          'jp': { title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'MASTER AI v7.3', intro_title: 'ようこそ', intro_desc: (c) => <span>服従せよ。</span>, btn_start: '開始', step1_title: '基本データ', label_name: '名前', label_level: '強度', label_date: '日付', label_year: '年', label_month: '月', step1_ratings_title: '開発部位', label_nipples: '乳首', label_anal: 'アナル', label_urethra: '尿道', label_pain: '苦痛', label_humiliation: '羞恥', label_edging: '寸止め', label_bondage: '拘束', label_public: '露出', label_service: '奉仕', label_sensory: '感覚遮断', step1_theme_title: 'テーマ', btn_generate: '生成', step2_title: 'の計画', btn_reset: '再設定', btn_download: '保存', footer_sign: '降伏します。', footer_approve: '承認済', warn_title: 'R-18', warn_text1: '成人向けコンテンツ。', warn_text2: '18歳未満禁止。', warn_text3: '退出してください。', warn_text4: '自己責任でお願いします。', warn_leave: '退出', warn_enter: '入場' },
           'kr': { title: '정조 관리', btn_start: '시작', step1_title: '정보', label_name: '이름', label_level: '레벨', label_date: '날짜', label_year: '년', label_month: '월', step1_ratings_title: '설정', label_nipples: '유두', label_anal: '애널', label_urethra: '요도', label_pain: '고통', label_humiliation: '수치', label_edging: '에징', label_bondage: '속박', label_public: '노출', label_service: '봉사', label_sensory: '감각', step1_theme_title: '테마', btn_generate: '생성', step2_title: '의 달력', btn_reset: '재설정', btn_download: '다운로드', warn_title: '19세 미만 금지', warn_leave: '나가기', warn_enter: '입장' },
           'de': { title: 'KEUSCHHEIT', btn_start: 'Start', step1_title: 'Daten', label_name: 'Name', label_level: 'Level', label_date: 'Datum', label_year: 'Jahr', label_month: 'Monat', step1_ratings_title: 'Limits', label_nipples: 'Nippel', label_anal: 'Anal', label_urethra: 'Harnröhre', label_pain: 'Schmerz', label_humiliation: 'Demütigung', label_edging: 'Edging', label_bondage: 'Fesselung', label_public: 'Öffentlich', label_service: 'Dienst', label_sensory: 'Sensorik', step1_theme_title: 'Thema', btn_generate: 'Generieren', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Download', warn_title: 'AB 18', warn_leave: 'Verlassen', warn_enter: 'Eintreten' },
           'es': { title: 'PROTOCOLO', btn_start: 'Inicio', step1_title: 'Datos', label_name: 'Nombre', label_level: 'Nivel', label_date: 'Fecha', label_year: 'Año', label_month: 'Mes', step1_ratings_title: 'Límites', label_nipples: 'Pezones', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dolor', label_humiliation: 'Humillación', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Servicio', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Generar', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Descargar', warn_title: '+18', warn_leave: 'Salir', warn_enter: 'Entrar' },
@@ -116,7 +125,6 @@
         };
 
         // --- MASSIVE TASK DATABASE v7.0 (400+ ITEMS) ---
-        
         const GENERATE_DB = () => {
             const db = [];
             
@@ -262,7 +270,6 @@
         };
 
         const LockCalendarPro = () => {
-          // ... (State and useEffect unchanged) ...
           const [verified, setVerified] = useState(false);
           const [step, setStep] = useState(0); 
           const [selectedDay, setSelectedDay] = useState(null); 
@@ -296,22 +303,44 @@
 
           const handlePrefChange = (key, val) => setUserData(prev => ({ ...prev, prefs: { ...prev.prefs, [key]: val } }));
 
-          const getTaskIcon = (tags, type) => {
-            const props = { className: `w-full h-full opacity-20 ${currentTheme.text}` };
-            if (type === 'start' || type === 'end') return <Lock {...props} className={`w-full h-full opacity-20 ${currentTheme.accent}`} />;
-            if (type === 'check') return <ShieldAlert {...props} />;
+          // --- DYNAMIC ICON SELECTOR ---
+          const getIconByContent = (taskText, tags, type) => {
+            const props = { className: `w-full h-full opacity-15 ${currentTheme.text}` }; // Opacity increased to 15%
+            
+            // 1. Special Days
+            if (type === 'start') return <Lock {...props} className={`w-full h-full opacity-30 ${currentTheme.accent}`} />;
+            if (type === 'end') return <Key {...props} className={`w-full h-full opacity-30 ${currentTheme.accent}`} />;
+            if (type === 'check') return <ShieldAlert {...props} className={`w-full h-full opacity-30 text-yellow-500`} />;
+
+            // 2. Keyword Matching (Content-based)
+            const text = taskText || "";
+            if (text.includes("冰") || text.includes("冷")) return <Snowflake {...props} />;
+            if (text.includes("睡") || text.includes("晚")) return <Moon {...props} />;
+            if (text.includes("早") || text.includes("起")) return <Sun {...props} />;
+            if (text.includes("走") || text.includes("步") || text.includes("行")) return <Footprints {...props} />;
+            if (text.includes("潔") || text.includes("洗")) return <Sparkles {...props} />;
+            if (text.includes("寫") || text.includes("記")) return <Pen {...props} />;
+            if (text.includes("水") || text.includes("尿") || text.includes("飲")) return <Droplet {...props} />; // Specific for water/liquid
+            if (text.includes("口") || text.includes("吃") || text.includes("喝")) return <Coffee {...props} />;
+            if (text.includes("音") || text.includes("聽")) return <Music {...props} />;
+            if (text.includes("拍") || text.includes("照")) return <Camera {...props} />;
+            if (text.includes("讀") || text.includes("書")) return <Book {...props} />;
+            if (text.includes("跪") || text.includes("坐")) return <Activity {...props} />; // Posture
+
+            // 3. Category Fallbacks
             if (tags.includes('nipples')) return <Disc {...props} />;
             if (tags.includes('anal')) return <Activity {...props} />;
             if (tags.includes('urethra')) return <Droplet {...props} />;
             if (tags.includes('pain')) return <Zap {...props} />;
             if (tags.includes('humiliation')) return <Eye {...props} />;
             if (tags.includes('edging')) return <Flame {...props} />;
-            if (tags.includes('mind')) return <Ghost {...props} />;
             if (tags.includes('bondage')) return <Anchor {...props} />;
             if (tags.includes('public')) return <Globe {...props} />;
             if (tags.includes('service')) return <Ruler {...props} />;
             if (tags.includes('sensory')) return <Headphones {...props} />;
-            return <Smile {...props} />;
+            
+            // 4. General Fallback
+            return <CalendarIcon {...props} />;
           };
 
           // Simplified text getter
@@ -355,7 +384,6 @@
             const selectedTasks = [];
             const usedTexts = new Set();
             
-            // 1. Try to fill from user prefs first
             for (const task of shuffledPool) {
               if (!usedTexts.has(task.text_zh)) {
                 selectedTasks.push(task);
@@ -364,7 +392,7 @@
               if (selectedTasks.length >= daysInMonth) break;
             }
 
-            // 2. If not enough, fill from UNUSED General tasks
+            // Fill leftover
             if (selectedTasks.length < daysInMonth) {
                 const unusedGeneral = TASKS_DB.filter(t => t.tags.includes('general') && !usedTexts.has(t.text_zh));
                 const extraTasks = unusedGeneral.sort(() => Math.random() - 0.5);
@@ -375,7 +403,7 @@
                 }
             }
 
-            // 3. Last resort: Allow repeats
+            // Random fill if absolutely needed
             while (selectedTasks.length < daysInMonth) {
                selectedTasks.push(shuffledPool[Math.floor(Math.random() * shuffledPool.length)]);
             }
@@ -569,7 +597,7 @@
                       {calendar.map((day, idx) => (
                         day.type === 'empty' ? (<div key={`empty-${idx}`} className="hidden md:block"></div>) : (
                           <div key={day.day} onClick={() => setSelectedDay(day)} className={`relative p-2 md:p-3 rounded border transition-all cursor-pointer group flex flex-col min-h-[120px] ${currentTheme.card} ${currentTheme.border} ${currentTheme.cardHover}`}>
-                            <div className="absolute -right-4 -bottom-4 w-24 h-24 transform rotate-12 opacity-5 pointer-events-none">{getTaskIcon(day.tags, day.type)}</div>
+                            <div className="absolute right-1 bottom-1 w-12 h-12 pointer-events-none">{getIconByContent(day.task, day.tags, day.type)}</div>
                             <div className="flex justify-between items-start z-10 mb-2">
                               <span className={`text-lg md:text-xl font-black font-mono ${day.type === 'start' || day.type === 'end' ? currentTheme.accent : 'opacity-40 group-hover:opacity-80'}`}>{String(day.day).padStart(2, '0')}</span>
                               {day.type === 'start' && <Lock className={`w-4 h-4 ${currentTheme.accent}`} />}
@@ -586,7 +614,7 @@
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setSelectedDay(null)}>
                         <div className={`${currentTheme.modal} border-2 p-6 rounded-lg max-w-sm w-full shadow-2xl relative ${currentTheme.bg}`} onClick={e => e.stopPropagation()}>
                           <button onClick={() => setSelectedDay(null)} className="absolute top-3 right-3 opacity-50 hover:opacity-100"><XIcon className="w-5 h-5"/></button>
-                          <div className="flex justify-center mb-6"><div className={`w-20 h-20 rounded-full bg-black/20 flex items-center justify-center p-4 ${currentTheme.border} border`}>{getTaskIcon(selectedDay.tags, selectedDay.type)}</div></div>
+                          <div className="flex justify-center mb-6"><div className={`w-20 h-20 rounded-full bg-black/20 flex items-center justify-center p-4 ${currentTheme.border} border`}>{getIconByContent(selectedDay.task, selectedDay.tags, selectedDay.type)}</div></div>
                           <h3 className={`${currentTheme.accent} font-mono text-lg font-bold mb-4 border-b ${currentTheme.border} pb-2 text-center`}>{userData.year}.{userData.month}.{String(selectedDay.day).padStart(2,'0')}</h3>
                           <p className={`text-lg leading-relaxed font-medium ${currentTheme.text} text-center`}>{selectedDay.task}</p>
                         </div>
@@ -619,7 +647,7 @@
                       {calendar.map((day, idx) => (
                         day.type === 'empty' ? (<div key={`exp-empty-${idx}`} className="border-transparent"></div>) : (
                           <div key={day.day} className={`border ${currentTheme.border} p-3 relative flex flex-col h-full overflow-hidden ${day.type === 'start' || day.type === 'end' ? 'bg-black/10' : ''}`}>
-                            <div className="absolute -right-2 -bottom-2 w-16 h-16 transform rotate-12 opacity-[0.07]">{getTaskIcon(day.tags, day.type)}</div>
+                            <div className="absolute right-1 bottom-1 w-12 h-12 pointer-events-none">{getIconByContent(day.task, day.tags, day.type)}</div>
                             <span className={`text-2xl font-bold font-mono mb-1 ${day.type === 'check' ? 'text-yellow-500' : 'opacity-40'}`}>{day.day}</span>
                             {/* Adjusted Font Size for readability and fitting */}
                             <p className="text-[15px] leading-tight opacity-90 relative z-10 whitespace-normal break-words font-medium">{day.task}</p>
