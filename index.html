@@ -30,6 +30,17 @@
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
         .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
         
+        /* Glitch effect for translation */
+        @keyframes glitch {
+            0% { opacity: 1; transform: translateX(0); }
+            20% { opacity: 0.8; transform: translateX(-2px); }
+            40% { opacity: 0.9; transform: translateX(2px); }
+            60% { opacity: 0.8; transform: translateX(-1px); }
+            80% { opacity: 0.9; transform: translateX(1px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        .animate-glitch { animation: glitch 0.2s linear infinite; }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #1c1917; }
@@ -43,7 +54,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- ICONS (Expanded Set) ---
+        // --- ICONS ---
         const IconBase = ({ d, className }) => (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{d}</svg>
         );
@@ -58,7 +69,7 @@
         const Eye = (p) => <IconBase {...p} d={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></>} />;
         const Zap = (p) => <IconBase {...p} d={<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></>} />;
         const Disc = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></>} />;
-        const Palette = (p) => <IconBase {...p} d={<><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></>} />;
+        const PaletteIcon = (p) => <IconBase {...p} d={<><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></>} />;
         const Droplet = (p) => <IconBase {...p} d={<><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></>} />;
         const Ghost = (p) => <IconBase {...p} d={<><path d="M9 22l1-2.5 2 2.5 2-2.5 2 2.5 1-2.5V9a7 7 0 0 0-7-7 7 7 0 0 0-7 7v10.5L9 22z"></path><path d="M9 9h.01"></path><path d="M15 9h.01"></path></>} />;
         const Flame = (p) => <IconBase {...p} d={<><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></>} />;
@@ -68,7 +79,7 @@
         const Headphones = (p) => <IconBase {...p} d={<><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></>} />;
         const ChevronRight = (p) => <IconBase {...p} d={<><polyline points="9 18 15 12 9 6"></polyline></>} />;
         
-        // New Icons for Variety
+        // New Icons
         const Snowflake = (p) => <IconBase {...p} d={<><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line><path d="m20 16-4-4 4-4"></path><path d="m4 8 4 4-4 4"></path><path d="m16 4-4 4-4-4"></path><path d="m8 20 4-4 4 4"></path></>} />;
         const Moon = (p) => <IconBase {...p} d={<><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></>} />;
         const Sun = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></>} />;
@@ -83,7 +94,7 @@
         // --- TRANSLATIONS (13 Languages) ---
         const TRANSLATIONS = {
           'zh-TW': {
-            title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'MASTER AI v7.3',
+            title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'v8.0',
             intro_title: '歡迎來到你的新生活',
             intro_desc: (accent) => (
                 <span>
@@ -93,14 +104,14 @@
                     這是一個為期 30 天的貞操鎖訓練計畫。我將根據你的素質，為你量身打造這一個月的行事曆。
                 </span>
             ),
-            btn_start: '開始制定計畫', step1_title: '基本資料', label_name: '暱稱 / 稱呼 · Nickname', label_level: '強度等級 · Intensity',
-            label_date: '製作月份 · Date', label_year: '西元年 · YYYY', label_month: '月份 · Month',
-            step1_ratings_title: '部位與程度接受度 · Zones & Limits',
-            label_nipples: '乳頭開發 · Nipples', label_anal: '後庭適應 · Anal', label_urethra: '尿道/排泄 · Urethra',
-            label_pain: '疼痛忍受 · Pain', label_humiliation: '羞恥感 · Humiliation', label_edging: '邊緣控射 · Edging',
-            label_bondage: '束縛/拘束 · Bondage', label_public: '露出/野外 · Public', label_service: '侍奉/任務 · Service',
-            label_sensory: '感官剝奪 · Sensory',
-            step1_theme_title: '視覺主題風格 · Visual Theme', btn_generate: '生成鎖曆計畫 · Generate',
+            btn_start: '開始制定計畫', step1_title: '基本資料', label_name: '暱稱 / 稱呼', label_level: '強度等級',
+            label_date: '製作月份', label_year: '西元年', label_month: '月份',
+            step1_ratings_title: '部位與程度接受度',
+            label_nipples: '乳頭開發', label_anal: '後庭適應', label_urethra: '尿道/排泄',
+            label_pain: '疼痛忍受', label_humiliation: '羞恥感', label_edging: '邊緣控射',
+            label_bondage: '束縛/拘束', label_public: '露出/野外', label_service: '侍奉/任務',
+            label_sensory: '感官剝奪',
+            step1_theme_title: '視覺主題風格', btn_generate: '生成鎖曆計畫',
             step2_title: '的專屬鎖曆', btn_reset: '重新評估', btn_download: '下載鎖曆', modal_day: 'DAY',
             footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
             warn_title: '警告：成人內容', 
@@ -108,147 +119,225 @@
             warn_text2: '依據《兒童及少年福利與權益保障法》第 46 條規定，未滿 18 歲之兒童及少年不得瀏覽本網站內容。進入即代表您已年滿 18 歲，且同意觀看此類內容。', 
             warn_text3: '本計畫中的所有活動應在「安全、理智、知情同意 (SSC)」或「風險認知下的知情同意 (RACK)」原則下進行。請量力而為，若有身體不適請立即停止。本網站不對任何實際執行後果負責。',
             warn_text4: '若您未滿 18 歲，或您所在地區法律禁止此類內容，或者此類內容會讓您感到不適，請立即點擊離開。',
-            warn_leave: '離開 (Leave)', warn_enter: '我已年滿 18 歲 (Enter)'
+            warn_leave: '離開 (Leave)', warn_enter: '我已年滿 18 歲 (Enter)',
+            processing: '處理中...'
           },
-          'en': { title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'MASTER AI v7.3', intro_title: 'Welcome', intro_desc: (c) => <span>Obey.</span>, btn_start: 'Start', step1_title: 'Subject Data', label_name: 'Name', label_level: 'Level', label_date: 'Date', label_year: 'Year', label_month: 'Month', step1_ratings_title: 'Limits', label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Pain', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensory', step1_theme_title: 'Theme', btn_generate: 'Generate', step2_title: ' Calendar', btn_reset: 'Reset', btn_download: 'Download', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+ ONLY', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Leave', warn_enter: 'Enter' },
-          'jp': { title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'MASTER AI v7.3', intro_title: 'ようこそ', intro_desc: (c) => <span>服従せよ。</span>, btn_start: '開始', step1_title: '基本データ', label_name: '名前', label_level: '強度', label_date: '日付', label_year: '年', label_month: '月', step1_ratings_title: '開発部位', label_nipples: '乳首', label_anal: 'アナル', label_urethra: '尿道', label_pain: '苦痛', label_humiliation: '羞恥', label_edging: '寸止め', label_bondage: '拘束', label_public: '露出', label_service: '奉仕', label_sensory: '感覚遮断', step1_theme_title: 'テーマ', btn_generate: '生成', step2_title: 'の計画', btn_reset: '再設定', btn_download: '保存', footer_sign: '降伏します。', footer_approve: '承認済', warn_title: 'R-18', warn_text1: '成人向けコンテンツ。', warn_text2: '18歳未満禁止。', warn_text3: '退出してください。', warn_text4: '自己責任でお願いします。', warn_leave: '退出', warn_enter: '入場' },
-          'kr': { title: '정조 관리', btn_start: '시작', step1_title: '정보', label_name: '이름', label_level: '레벨', label_date: '날짜', label_year: '년', label_month: '월', step1_ratings_title: '설정', label_nipples: '유두', label_anal: '애널', label_urethra: '요도', label_pain: '고통', label_humiliation: '수치', label_edging: '에징', label_bondage: '속박', label_public: '노출', label_service: '봉사', label_sensory: '감각', step1_theme_title: '테마', btn_generate: '생성', step2_title: '의 달력', btn_reset: '재설정', btn_download: '다운로드', warn_title: '19세 미만 금지', warn_leave: '나가기', warn_enter: '입장' },
-          'de': { title: 'KEUSCHHEIT', btn_start: 'Start', step1_title: 'Daten', label_name: 'Name', label_level: 'Level', label_date: 'Datum', label_year: 'Jahr', label_month: 'Monat', step1_ratings_title: 'Limits', label_nipples: 'Nippel', label_anal: 'Anal', label_urethra: 'Harnröhre', label_pain: 'Schmerz', label_humiliation: 'Demütigung', label_edging: 'Edging', label_bondage: 'Fesselung', label_public: 'Öffentlich', label_service: 'Dienst', label_sensory: 'Sensorik', step1_theme_title: 'Thema', btn_generate: 'Generieren', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Download', warn_title: 'AB 18', warn_leave: 'Verlassen', warn_enter: 'Eintreten' },
-          'es': { title: 'PROTOCOLO', btn_start: 'Inicio', step1_title: 'Datos', label_name: 'Nombre', label_level: 'Nivel', label_date: 'Fecha', label_year: 'Año', label_month: 'Mes', step1_ratings_title: 'Límites', label_nipples: 'Pezones', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dolor', label_humiliation: 'Humillación', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Servicio', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Generar', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Descargar', warn_title: '+18', warn_leave: 'Salir', warn_enter: 'Entrar' },
-          'fr': { title: 'PROTOCOLE', btn_start: 'Début', step1_title: 'Données', label_name: 'Nom', label_level: 'Niveau', label_date: 'Date', label_year: 'Année', label_month: 'Mois', step1_ratings_title: 'Limites', label_nipples: 'Mamelons', label_anal: 'Anal', label_urethra: 'Urètre', label_pain: 'Douleur', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensoriel', step1_theme_title: 'Thème', btn_generate: 'Générer', step2_title: ' Calendrier', btn_reset: 'Reset', btn_download: 'Télécharger', warn_title: '18+', warn_leave: 'Quitter', warn_enter: 'Entrer' },
-          'ru': { title: 'ПРОТОКОЛ', btn_start: 'Старт', step1_title: 'Данные', label_name: 'Имя', label_level: 'Уровень', label_date: 'Дата', label_year: 'Год', label_month: 'Месяц', step1_ratings_title: 'Лимиты', label_nipples: 'Соски', label_anal: 'Анал', label_urethra: 'Уретра', label_pain: 'Боль', label_humiliation: 'Унижение', label_edging: 'Эджинг', label_bondage: 'Бондаж', label_public: 'Публично', label_service: 'Служба', label_sensory: 'Сенсорика', step1_theme_title: 'Тема', btn_generate: 'Создать', step2_title: ' Календарь', btn_reset: 'Сброс', btn_download: 'Скачать', warn_title: '18+', warn_leave: 'Выход', warn_enter: 'Вход' },
-          'it': { title: 'PROTOCOLLO', btn_start: 'Inizio', step1_title: 'Dati', label_name: 'Nome', label_level: 'Livello', label_date: 'Data', label_year: 'Anno', label_month: 'Mese', step1_ratings_title: 'Limiti', label_nipples: 'Capezzoli', label_anal: 'Anale', label_urethra: 'Uretra', label_pain: 'Dolore', label_humiliation: 'Umiliazione', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Pubblico', label_service: 'Servizio', label_sensory: 'Sensoriale', step1_theme_title: 'Tema', btn_generate: 'Generare', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Scarica', warn_title: '18+', warn_leave: 'Esci', warn_enter: 'Entra' },
-          'pt': { title: 'PROTOCOLO', btn_start: 'Início', step1_title: 'Dados', label_name: 'Nome', label_level: 'Nível', label_date: 'Data', label_year: 'Ano', label_month: 'Mês', step1_ratings_title: 'Limites', label_nipples: 'Mamilos', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dor', label_humiliation: 'Humilhação', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Serviço', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Gerar', step2_title: ' Calendário', btn_reset: 'Reset', btn_download: 'Baixar', warn_title: '18+', warn_leave: 'Sair', warn_enter: 'Entrar' },
-          'th': { title: 'โปรโตคอล', btn_start: 'เริ่ม', step1_title: 'ข้อมูล', label_name: 'ชื่อ', label_level: 'ระดับ', label_date: 'วันที่', label_year: 'ปี', label_month: 'เดือน', step1_ratings_title: 'ขีดจำกัด', label_nipples: 'หัวนม', label_anal: 'ทวารหนัก', label_urethra: 'ท่อปัสสาวะ', label_pain: 'ความเจ็บปวด', label_humiliation: 'ความอัปยศ', label_edging: 'เอจจิ้ง', label_bondage: 'พันธนาการ', label_public: 'สาธารณะ', label_service: 'บริการ', label_sensory: 'ประสาทสัมผัส', step1_theme_title: 'ธีม', btn_generate: 'สร้าง', step2_title: ' ปฏิทิน', btn_reset: 'รีเซ็ต', btn_download: 'ดาวน์โหลด', warn_title: '18+', warn_leave: 'ออก', warn_enter: 'เข้า' },
-          'vi': { title: 'GIAO THỨC', btn_start: 'Bắt đầu', step1_title: 'Dữ liệu', label_name: 'Tên', label_level: 'Cấp độ', label_date: 'Ngày', label_year: 'Năm', label_month: 'Tháng', step1_ratings_title: 'Giới hạn', label_nipples: 'Núm vú', label_anal: 'Hậu môn', label_urethra: 'Niệu đạo', label_pain: 'Đau đớn', label_humiliation: 'Sỉ nhục', label_edging: 'Edging', label_bondage: 'Trói buộc', label_public: 'Công cộng', label_service: 'Phục vụ', label_sensory: 'Cảm giác', step1_theme_title: 'Chủ đề', btn_generate: 'Tạo', step2_title: ' Lịch', btn_reset: 'Đặt lại', btn_download: 'Tải xuống', warn_title: '18+', warn_leave: 'Thoát', warn_enter: 'Vào' },
-          'id': { title: 'PROTOKOL', btn_start: 'Mulai', step1_title: 'Data', label_name: 'Nama', label_level: 'Level', label_date: 'Tanggal', label_year: 'Tahun', label_month: 'Bulan', step1_ratings_title: 'Batas', label_nipples: 'Puting', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Sakit', label_humiliation: 'Penghinaan', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Publik', label_service: 'Layanan', label_sensory: 'Sensorik', step1_theme_title: 'Tema', btn_generate: 'Hasilkan', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Unduh', warn_title: '18+', warn_leave: 'Keluar', warn_enter: 'Masuk' }
+          'en': { 
+            title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'v8.0', 
+            intro_title: 'Welcome to Your New Life', 
+            intro_desc: (c) => <span>I am the System Master. You crave <span className={c}>Control</span> and <span className={c}>Denial</span>. Here, you don't think. You <span className="font-bold">Obey</span>. This is a 30-day chastity training protocol designed just for you.</span>, 
+            btn_start: 'Start Protocol', step1_title: 'Subject Data', label_name: 'Name', label_level: 'Level', label_date: 'Date', label_year: 'Year', label_month: 'Month', step1_ratings_title: 'Limits', label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Pain', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensory', step1_theme_title: 'Theme', btn_generate: 'Generate', step2_title: ' Calendar', btn_reset: 'Reset', btn_download: 'Download', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+ ONLY', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Leave', warn_enter: 'Enter',
+            processing: 'PROCESSING...'
+          },
+          'jp': { 
+            title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'v8.0', 
+            intro_title: '新しい生活へようこそ', 
+            intro_desc: (c) => <span>私はシステム管理者です。あなたは<span className={c}>支配</span>と<span className={c}>剥奪</span>を望んでいます。ここでは考える必要はありません。<span className="font-bold">実行</span>あるのみです。これはあなたのために設計された30日間の貞操訓練プログラムです。</span>, 
+            btn_start: '計画を開始', step1_title: '基本データ', label_name: '名前', label_level: '強度', label_date: '日付', label_year: '年', label_month: '月', step1_ratings_title: '開発部位', label_nipples: '乳首', label_anal: 'アナル', label_urethra: '尿道', label_pain: '苦痛', label_humiliation: '羞恥', label_edging: '寸止め', label_bondage: '拘束', label_public: '露出', label_service: '奉仕', label_sensory: '感覚遮断', step1_theme_title: 'テーマ', btn_generate: '生成', step2_title: 'の計画', btn_reset: '再設定', btn_download: '保存', footer_sign: '降伏します。', footer_approve: '承認済', warn_title: 'R-18', warn_text1: '成人向けコンテンツ。', warn_text2: '18歳未満禁止。', warn_text3: '退出してください。', warn_text4: '自己責任でお願いします。', warn_leave: '退出', warn_enter: '入場',
+            processing: '処理中...'
+          },
+          'kr': { 
+            title: '정조 관리', subtitle: 'PROTOCOL', version: 'v8.0', 
+            intro_title: '환영합니다', 
+            intro_desc: (c) => <span>시스템 관리자입니다. 당신은 <span className={c}>통제</span>와 <span className={c}>박탈</span>을 갈망합니다. 여기서는 생각할 필요가 없습니다. <span className="font-bold">복종</span>하십시오. 당신만을 위한 30일간의 훈련입니다.</span>, 
+            btn_start: '시작', step1_title: '정보', label_name: '이름', label_level: '레벨', label_date: '날짜', label_year: '년', label_month: '월', step1_ratings_title: '설정', label_nipples: '유두', label_anal: '애널', label_urethra: '요도', label_pain: '고통', label_humiliation: '수치', label_edging: '에징', label_bondage: '속박', label_public: '노출', label_service: '봉사', label_sensory: '감각', step1_theme_title: '테마', btn_generate: '생성', step2_title: '의 달력', btn_reset: '재설정', btn_download: '다운로드', modal_day: 'DAY', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '19세 미만 금지', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: '나가기', warn_enter: '입장',
+            processing: '처리 중...'
+          },
+          'de': { 
+            title: 'KEUSCHHEIT', subtitle: 'PROTOCOL', version: 'v8.0', 
+            intro_title: 'Willkommen', 
+            intro_desc: (c) => <span>Ich bin der Meister. Du sehnst dich nach <span className={c}>Kontrolle</span>. <span className="font-bold">Gehorche</span>. Dies ist dein 30-Tage-Training.</span>, 
+            btn_start: 'Start', step1_title: 'Daten', label_name: 'Name', label_level: 'Level', label_date: 'Datum', label_year: 'Jahr', label_month: 'Monat', step1_ratings_title: 'Limits', label_nipples: 'Nippel', label_anal: 'Anal', label_urethra: 'Harnröhre', label_pain: 'Schmerz', label_humiliation: 'Demütigung', label_edging: 'Edging', label_bondage: 'Fesselung', label_public: 'Öffentlich', label_service: 'Dienst', label_sensory: 'Sensorik', step1_theme_title: 'Thema', btn_generate: 'Generieren', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Download', modal_day: 'TAG', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: 'AB 18', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Verlassen', warn_enter: 'Eintreten',
+            processing: 'WIRD VERARBEITET...'
+          },
+          'es': { 
+            title: 'PROTOCOLO', subtitle: 'PROTOCOL', version: 'v8.0', 
+            intro_title: 'Bienvenido', 
+            intro_desc: (c) => <span>Soy el Maestro. Anhelas <span className={c}>Control</span>. <span className="font-bold">Obedece</span>. Este es tu entrenamiento de 30 días.</span>, 
+            btn_start: 'Inicio', step1_title: 'Datos', label_name: 'Nombre', label_level: 'Nivel', label_date: 'Fecha', label_year: 'Año', label_month: 'Mes', step1_ratings_title: 'Límites', label_nipples: 'Pezones', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dolor', label_humiliation: 'Humillación', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Servicio', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Generar', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Descargar', modal_day: 'DÍA', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '+18', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Salir', warn_enter: 'Entrar',
+            processing: 'PROCESANDO...'
+          },
+          'fr': { 
+            title: 'PROTOCOLE', subtitle: 'PROTOCOL', version: 'v8.0', 
+            intro_title: 'Bienvenue', 
+            intro_desc: (c) => <span>Je suis le Maître. Vous désirez le <span className={c}>Contrôle</span>. <span className="font-bold">Obéissez</span>. Voici votre entraînement de 30 jours.</span>, 
+            btn_start: 'Début', step1_title: 'Données', label_name: 'Nom', label_level: 'Niveau', label_date: 'Date', label_year: 'Année', label_month: 'Mois', step1_ratings_title: 'Limites', label_nipples: 'Mamelons', label_anal: 'Anal', label_urethra: 'Urètre', label_pain: 'Douleur', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensoriel', step1_theme_title: 'Thème', btn_generate: 'Générer', step2_title: ' Calendrier', btn_reset: 'Reset', btn_download: 'Télécharger', modal_day: 'JOUR', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Quitter', warn_enter: 'Entrer',
+            processing: 'TRAITEMENT...'
+          },
+          'ru': { title: 'ПРОТОКОЛ', subtitle: 'PROTOCOL', version: 'v8.0', intro_title: 'Добро пожаловать', intro_desc: (c) => <span>Повинуйся. Это 30-дневная программа.</span>, btn_start: 'Старт', step1_title: 'Данные', label_name: 'Имя', label_level: 'Уровень', label_date: 'Дата', label_year: 'Год', label_month: 'Месяц', step1_ratings_title: 'Лимиты', label_nipples: 'Соски', label_anal: 'Анал', label_urethra: 'Уретра', label_pain: 'Боль', label_humiliation: 'Унижение', label_edging: 'Эджинг', label_bondage: 'Бондаж', label_public: 'Публично', label_service: 'Служба', label_sensory: 'Сенсорика', step1_theme_title: 'Тема', btn_generate: 'Создать', step2_title: ' Календарь', btn_reset: 'Сброс', btn_download: 'Скачать', modal_day: 'ДЕНЬ', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Выход', warn_enter: 'Вход', processing: 'ОБРАБОТКА...' },
+          'it': { title: 'PROTOCOLLO', subtitle: 'PROTOCOL', version: 'v8.0', intro_title: 'Benvenuto', intro_desc: (c) => <span>Obbedisci. Questo è il tuo allenamento di 30 giorni.</span>, btn_start: 'Inizio', step1_title: 'Dati', label_name: 'Nome', label_level: 'Livello', label_date: 'Data', label_year: 'Anno', label_month: 'Mese', step1_ratings_title: 'Limiti', label_nipples: 'Capezzoli', label_anal: 'Anale', label_urethra: 'Uretra', label_pain: 'Dolore', label_humiliation: 'Umiliazione', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Pubblico', label_service: 'Servizio', label_sensory: 'Sensoriale', step1_theme_title: 'Tema', btn_generate: 'Generare', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Scarica', modal_day: 'GIORNO', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Esci', warn_enter: 'Entra', processing: 'ELABORAZIONE...' },
+          'pt': { title: 'PROTOCOLO', subtitle: 'PROTOCOL', version: 'v8.0', intro_title: 'Bem-vindo', intro_desc: (c) => <span>Obedeça. Este é o seu treino de 30 dias.</span>, btn_start: 'Início', step1_title: 'Dados', label_name: 'Nome', label_level: 'Nível', label_date: 'Data', label_year: 'Ano', label_month: 'Mês', step1_ratings_title: 'Limites', label_nipples: 'Mamilos', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dor', label_humiliation: 'Humilhação', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Serviço', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Gerar', step2_title: ' Calendário', btn_reset: 'Reset', btn_download: 'Baixar', modal_day: 'DIA', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Sair', warn_enter: 'Entrar', processing: 'PROCESSANDO...' },
+          'th': { title: 'โปรโตคอล', subtitle: 'PROTOCOL', version: 'v8.0', intro_title: 'ยินดีต้อนรับ', intro_desc: (c) => <span>เชื่อฟัง นี่คือการฝึกฝน 30 วันของคุณ</span>, btn_start: 'เริ่ม', step1_title: 'ข้อมูล', label_name: 'ชื่อ', label_level: 'ระดับ', label_date: 'วันที่', label_year: 'ปี', label_month: 'เดือน', step1_ratings_title: 'ขีดจำกัด', label_nipples: 'หัวนม', label_anal: 'ทวารหนัก', label_urethra: 'ท่อปัสสาวะ', label_pain: 'ความเจ็บปวด', label_humiliation: 'ความอัปยศ', label_edging: 'เอจจิ้ง', label_bondage: 'พันธนาการ', label_public: 'สาธารณะ', label_service: 'บริการ', label_sensory: 'ประสาทสัมผัส', step1_theme_title: 'ธีม', btn_generate: 'สร้าง', step2_title: ' ปฏิทิน', btn_reset: 'รีเซ็ต', btn_download: 'ดาวน์โหลด', modal_day: 'วัน', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'ออก', warn_enter: 'เข้า', processing: 'กำลังประมวลผล...' },
+          'vi': { title: 'GIAO THỨC', subtitle: 'PROTOCOL', version: 'v8.0', intro_title: 'Chào mừng', intro_desc: (c) => <span>Tuân lệnh. Đây là khóa huấn luyện 30 ngày của bạn.</span>, btn_start: 'Bắt đầu', step1_title: 'Dữ liệu', label_name: 'Tên', label_level: 'Cấp độ', label_date: 'Ngày', label_year: 'Năm', label_month: 'Tháng', step1_ratings_title: 'Giới hạn', label_nipples: 'Núm vú', label_anal: 'Hậu môn', label_urethra: 'Niệu đạo', label_pain: 'Đau đớn', label_humiliation: 'Sỉ nhục', label_edging: 'Edging', label_bondage: 'Trói buộc', label_public: 'Công cộng', label_service: 'Phục vụ', label_sensory: 'Cảm giác', step1_theme_title: 'Chủ đề', btn_generate: 'Tạo', step2_title: ' Lịch', btn_reset: 'Đặt lại', btn_download: 'Tải xuống', modal_day: 'NGÀY', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Thoát', warn_enter: 'Vào', processing: 'ĐANG XỬ LÝ...' },
+          'id': { title: 'PROTOKOL', subtitle: 'PROTOCOL', version: 'v8.0', intro_title: 'Selamat Datang', intro_desc: (c) => <span>Patuhi. Ini adalah pelatihan 30 hari Anda.</span>, btn_start: 'Mulai', step1_title: 'Data', label_name: 'Nama', label_level: 'Level', label_date: 'Tanggal', label_year: 'Tahun', label_month: 'Bulan', step1_ratings_title: 'Batas', label_nipples: 'Puting', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Sakit', label_humiliation: 'Penghinaan', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Publik', label_service: 'Layanan', label_sensory: 'Sensorik', step1_theme_title: 'Tema', btn_generate: 'Hasilkan', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Unduh', modal_day: 'HARI', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_text4: 'Safe, Sane, Consensual.', warn_leave: 'Keluar', warn_enter: 'Masuk', processing: 'MEMPROSES...' }
         };
 
         // --- MASSIVE TASK DATABASE v7.0 (400+ ITEMS) ---
         const GENERATE_DB = () => {
             const db = [];
             
-            // --- GENERAL (50+) ---
-            const gen_soft = [
-                "全天佩戴：今天只需習慣它的存在，感受它的重量。", "鏡前檢視：全裸在鏡子前觀察自己被鎖住的樣子 5 分鐘。", "觸摸禁止：今天除了清潔外，禁止用手觸碰籠子。", 
-                "早安儀式：起床後立刻檢查鎖具，對鏡子說『我是鎖的奴隸』。", "晚安確認：睡前檢查鎖具是否牢固，並感謝它的控制。", "喝水提醒：每次喝水時，都要提醒自己下面是被鎖住的。",
-                "純潔飲食：今天只吃清淡的食物，保持身體潔淨。", "坐姿小便：從今天開始，只能坐著如廁，無論環境。", "籠具對話：對著籠子說三聲『謝謝你保護我』。",
-                "行走感知：走路時專注感受籠子與大腿的每一次摩擦。", "束縛冥想：靜坐 10 分鐘，將意識完全集中在鎖的冰冷感上。", "絕對服從日：今天對任何人的合理要求都說『好』。",
-                "內衣檢視：檢查所有內褲，丟掉太鬆的，只留能包覆籠子的。", "清潔日：用牙刷仔細清潔籠具的每一個縫隙。", "記錄心情：寫下 50 字關於被鎖住的感受。",
-                "感謝日：在心裡感謝鎖具帶來的安全感。", "無慾日：今天禁止任何形式的性幻想。", "冷水洗臉：早晚用極冰的水洗臉，保持清醒。",
-                "鎖頭檢查：仔細檢查鎖頭與鑰匙孔是否有髒污。", "完整性檢查：確認皮膚沒有因為籠子而受傷。"
-            ];
-            const gen_med = [
-                "睡眠訓練：今晚必須佩戴著入睡，不允許半夜偷偷解開。", "無內褲日：今天在家不穿內褲，只穿外褲感受籠子的摩擦。", "冷水澡：佩戴著鎖進行 5 分鐘冷水淋浴，保持冷靜。",
-                "坐姿生活：今天在家無論做什麼，盡量保持坐姿或跪姿。", "站立辦公：若環境允許，站立工作或上網 1 小時，感受重力。", "緊身褲日：穿上最緊的牛仔褲或內褲，勒緊籠子一整天。",
-                "冰塊降溫：用冰塊在籠子表面滑動，直到完全融化。", "禁止翹腳：整天坐著時雙腿併攏，不准翹二郎腿。", "只穿圍裙：在家做家事時，只穿圍裙（內褲可選），感受涼意。",
-                "禁慾宣告：對著鏡子大聲說三次『我不需要高潮』。", "地板時間：今天在家不准坐沙發，只能坐地板。", "睡前罰站：睡前面對牆壁罰站 15 分鐘，反省今日。",
-                "早起懲罰：比平常早起 30 分鐘，跪坐冥想。", "禁食零食：今天除了正餐，禁止吃任何零食。", "網路戒斷：回家後禁止使用社群軟體，只能面對自己。"
-            ];
-            const gen_hard = [
-                "24小時極限：完全忽視它的存在，進行高強度有氧運動。", "鐵褲刑罰：睡覺時穿著牛仔褲，限制翻身與活動。", "絕對禁觸：雙手戴上防抓手套（或厚襪子）2 小時。",
-                "極限運動：佩戴著鎖進行 100 下開合跳。", "長時間跪姿：在硬地板上跪坐 30 分鐘，不准移動。", "戶外感知：在戶外找一個沒人的地方，隔著褲子撫摸籠子。",
-                "冰桶挑戰：將下半身浸泡在冰桶中 1 分鐘。", "絕對沉默：在家中保持 2 小時的絕對沉默。", "蒙眼生活：戴上眼罩生活 1 小時（注意安全）。"
-            ];
+            const add = (t_zh, t_en, i, tags) => {
+                db.push({
+                    tags: tags,
+                    intensity: i,
+                    text: {
+                        'zh-TW': t_zh,
+                        'en': t_en || t_zh
+                    }
+                });
+            };
 
-            // --- NIPPLES (30+) ---
-            const nip_tasks = [
-                {t:"敏感喚醒：佩戴鎖具時，用手指捏住乳頭轉圈各 100 下。", i:"soft"}, {t:"冰塊刺激：用冰塊在乳頭上畫圈直到融化。", i:"soft"}, {t:"乳頭梳理：用梳子輕輕梳理乳頭部位。", i:"soft"},
-                {t:"夾子刑罰：使用夾子夾住乳頭持續 10 分鐘，期間不得發出聲音。", i:"medium"}, {t:"拉扯訓練：輕輕拉扯乳頭 50 下，感受痛與癢。", i:"medium"}, {t:"衣物摩擦：不穿上衣，穿著粗糙材質的外套摩擦乳頭 20 分鐘。", i:"medium"},
-                {t:"冷熱交替：先用熱毛巾敷，再用冰塊刺激乳頭，重複 3 次。", i:"medium"}, {t:"橡皮筋彈擊：用橡皮筋輕彈乳頭 10 下。", i:"medium"},
-                {t:"負重練習：在乳夾上掛上輕微重物（如鑰匙串）站立 5 分鐘。", i:"hard"}, {t:"強力夾擊：使用強力燕尾夾夾住乳頭 5 分鐘。", i:"hard"}, {t:"長時間夾：乳夾佩戴時間延長至 30 分鐘。", i:"hard"},
-                {t:"乳頭跪姿：跪在地上，乳頭夾著夾子，保持上身挺直。", i:"hard"}, {t:"冰火夾：夾子冰鎮後夾上乳頭。", i:"hard"}
-            ];
-
-            // --- ANAL (30+) ---
-            const anal_tasks = [
-                {t:"後庭感知：在籠中狀態下，嘗試放入一根手指或是小型塞子，適應 10 分鐘。", i:"medium"}, {t:"擴張準備：抹上潤滑液，嘗試放入中指，保持 5 分鐘。", i:"medium"},
-                {t:"冰火後庭：用溫水沖洗後庭，再嘗試放入冰過的塞子（小心）。", i:"medium"}, {t:"括約肌訓練：夾緊後庭 5 秒再放鬆，重複 50 組。", i:"medium"},
-                {t:"指險探秘：嘗試用兩根手指擴張後庭。", i:"medium"}, {t:"異物充盈：佩戴中型塞子進行日常活動（如做家事、看書）30 分鐘。", i:"hard"},
-                {t:"雙重鎖定：前面戴籠，後面戴塞，維持 1 小時。", i:"hard"}, {t:"睡眠塞：嘗試佩戴較小的塞子入睡（若不適請立即停止）。", i:"hard"},
-                {t:"排便後塞：排便清潔後，立刻塞入塞子保持空虛感消失。", i:"hard"}, {t:"長時間擴張：佩戴中型塞子觀看一部電影。", i:"hard"},
-                {t:"行走訓練：佩戴塞子在家中快走 10 分鐘。", i:"hard"}
-            ];
-
-            // --- URETHRA (30+) ---
-            const urethra_tasks = [
-                {t:"坐姿排泄：從今天起，這一個月內你只能像女生一樣坐著尿尿。", i:"soft"}, {t:"排尿觀察：排尿時仔細觀察尿液如何流過籠子。", i:"soft"},
-                {t:"飲水控制：大量飲水後忍耐 45 分鐘，感受膀胱與鎖具的雙重壓力。", i:"medium"}, {t:"中斷練習：尿尿時嘗試中斷 3 次，感受尿道被控制。", i:"medium"},
-                {t:"觀賞排泄：對著鏡子排泄，觀察尿液穿過籠子的樣子。", i:"medium"}, {t:"定時排泄：設定鬧鐘，每 3 小時才允許去一次廁所。", i:"medium"},
-                {t:"極限忍耐：有尿意後再忍耐 30 分鐘才能去廁所。", i:"hard"}, {t:"憋尿深蹲：在膀胱充盈的狀態下做 10 個深蹲（小心失禁）。", i:"hard"},
-                {t:"憋尿勃起：在憋尿狀態下看色情圖片，感受雙重壓力。", i:"hard"}, {t:"罰站憋尿：有尿意後罰站 15 分鐘才能去廁所。", i:"hard"}
-            ];
-
-            // --- PAIN (30+) ---
-            const pain_tasks = [
-                {t:"體能獻祭：全裸深蹲 50 下，讓籠子拍打你的大腿內側。", i:"medium"}, {t:"拍打練習：用尺或板子拍打臀部 50 下，必須聽到清脆聲響。", i:"medium"},
-                {t:"跪姿反省：跪在硬地板上 20 分鐘，雙手背後。", i:"medium"}, {t:"大腿內側捏：用手捏大腿內側的嫩肉 20 下。", i:"medium"},
-                {t:"冰水浸泡：將籠子與陰囊浸泡在冰水中 30 秒。", i:"medium"}, {t:"彈力懲罰：用橡皮筋或彈擊籠身 20 下，每一聲都是對慾望的告解。", i:"hard"},
-                {t:"夾子夾大腿：用夾子夾住大腿內側敏感肉 5 分鐘。", i:"hard"}, {t:"睪丸拍打：輕輕拍打睪丸 50 下，保持籠子不動。", i:"hard"},
-                {t:"跪姿跳躍：跪著進行 10 次跳躍（膝蓋著地跳），感受震動痛。", i:"hard"}, {t:"打蛋器：用手指彈擊睪丸 20 下。", i:"hard"},
-                {t:"掐大腿：每當有慾望時，用力掐大腿內側一下。", i:"hard"}
-            ];
-
-            // --- HUMILIATION (30+) ---
-            const hum_tasks = [
-                {t:"自我貶低：在身上用口紅寫下『Property (財產)』，拍照存檔。", i:"medium"}, {t:"寵物視角：佩戴著鎖在地上爬行 10 分鐘，像狗一樣。", i:"medium"},
-                {t:"對鏡自罵：看著鏡子裡的籠子，大聲說出 10 個自己淫蕩的理由。", i:"medium"}, {t:"項圈佩戴：在家戴上項圈一整天，提醒自己的身份。", i:"medium"},
-                {t:"拍攝籠照：拍一張籠子的特寫，不需要露臉，存為手機桌布一天。", i:"medium"}, {t:"視覺羞恥：穿著能透出鎖形狀的褲子去倒垃圾或超商買水。", i:"hard"},
-                {t:"垃圾桶視角：跪在垃圾桶旁進食一餐。", i:"hard"}, {t:"口紅塗鴉：用口紅塗滿籠子，然後戴著它過一天。", i:"hard"},
-                {t:"報數練習：一邊自打屁股一邊大聲報數『我是賤狗1、我是賤狗2...』至 50。", i:"hard"}, {t:"跪姿喝水：像狗一樣，不用手，直接從碗裡喝水。", i:"hard"}
-            ];
-
-            // --- BONDAGE (30+) ---
-            const bond_tasks = [
-                {t:"繩縛靜坐：將雙手反綁在背後，跪坐 20 分鐘，不准移動。", i:"medium"}, {t:"口球體驗：戴上口球（或咬住毛巾）30 分鐘，只能用鼻子呼吸。", i:"medium"},
-                {t:"單手生活：將慣用手綁在身後，只用另一隻手生活 2 小時。", i:"medium"}, {t:"併腿縛：將雙膝與腳踝綁在一起，試著在家移動 30 分鐘。", i:"medium"},
-                {t:"四肢剝奪：睡覺時必須戴上眼罩並稍微束縛雙手，體驗無助感。", i:"hard"}, {t:"木乃伊：用保鮮膜或床單將自己緊緊裹住，靜躺 20 分鐘。", i:"hard"},
-                {t:"反綁睡眠：嘗試雙手反綁（鬆鬆的）入睡。", i:"hard"}, {t:"龜甲縛：(若會) 嘗試給自己綁上龜甲縛並佩戴籠子 1 小時。", i:"hard"},
-                {t:"封口令：用膠帶封住嘴巴 1 小時。", i:"hard"}
-            ];
-
-            // --- PUBLIC (30+) ---
-            const pub_tasks = [
-                {t:"真空散步：不穿內褲，只穿寬鬆褲子在住家附近散步 10 分鐘。", i:"medium"}, {t:"樓梯間冒險：在深夜確認無人的情況下，去樓梯間站立 3 分鐘。", i:"medium"},
-                {t:"車內露出：在自己的車內（停在隱蔽處）脫下褲子觀察籠子 5 分鐘。", i:"medium"}, {t:"緊身運動：穿著緊身運動褲去公園慢跑，感受籠子的輪廓。", i:"medium"},
-                {t:"陽台放風：在隱密的陽台或窗邊全裸佩戴鎖具站立 5 分鐘。", i:"hard"}, {t:"超市挑戰：在超市購買一根香蕉或黃瓜，想像它是用來做什麼的。", i:"hard"},
-                {t:"公廁檢視：在公共廁所的隔間內，檢查並欣賞自己的鎖具。", i:"hard"}, {t:"大膽倒垃圾：只穿一件長大衣去倒垃圾（內裡全裸+籠子）。", i:"hard"}
-            ];
-
-            // --- SENSORY (30+) ---
-            const sen_tasks = [
-                {t:"黑暗晚餐：戴上眼罩進食晚餐，全程不得發出聲音。", i:"medium"}, {t:"聽覺剝奪：戴上降噪耳機或耳塞 2 小時，專注於下體的束縛感。", i:"medium"},
-                {t:"冰塊遊戲：閉眼，隨機用冰塊觸碰身體不同部位，不准躲避。", i:"medium"}, {t:"羽毛搔癢：用羽毛或筆尖輕掃全身敏感帶，除了籠子部位。", i:"medium"},
-                {t:"感官隔離：眼罩+耳塞，在床上靜躺 30 分鐘，只能感受下體的束縛。", i:"hard"}, {t:"溫差澡：熱水淋浴後瞬間切換全冷水，感受身體的震顫。", i:"hard"},
-                {t:"蒙眼觸摸：蒙眼後，用不同材質（絲綢、菜瓜布）觸摸籠子。", i:"hard"}
-            ];
-
-            // --- SERVICE (30+) ---
-            const srv_tasks = [
-                {t:"籠具清潔：用牙刷仔細清潔籠具的每一個縫隙，像對待聖物一樣。", i:"soft"}, {t:"跪姿擦地：全裸佩戴鎖具，用抹布跪著擦拭家裡的地板。", i:"medium"},
-                {t:"手寫合約：抄寫『我自願將控制權交出』50 遍。", i:"medium"}, {t:"整理聖壇：整理放置情趣用品或鎖具鑰匙的地方，保持一塵不染。", i:"medium"},
-                {t:"為主人倒水：跪著倒一杯水，想像呈給主人。", i:"medium"}, {t:"足部侍奉：想像主人的腳在面前，進行空氣舔舐與按摩 10 分鐘。", i:"hard"},
-                {t:"絕對跪姿：在家看電視或滑手機時，必須保持跪姿 30 分鐘。", i:"hard"}, {t:"鍵盤跪：(若有舊鍵盤) 膝蓋跪在鍵盤上 5 分鐘。", i:"hard"}
-            ];
-
-            // Populate DB helper
-            gen_soft.forEach(t => db.push({tags:['general'], intensity:'soft', text_zh:t}));
-            gen_med.forEach(t => db.push({tags:['general'], intensity:'medium', text_zh:t}));
-            gen_hard.forEach(t => db.push({tags:['general'], intensity:'hard', text_zh:t}));
+            // GENERAL (Sample of 50+ expansion)
+            add("全天佩戴：今天只需習慣它的存在，感受它的重量。", "24h Wear: Just get used to its existence.", "soft", ["general"]);
+            add("鏡前檢視：全裸在鏡子前觀察自己被鎖住的樣子 5 分鐘。", "Mirror Check: Observe yourself locked naked for 5 mins.", "soft", ["general"]);
+            add("觸摸禁止：今天除了清潔外，禁止用手觸碰籠子。", "No Touch: Do not touch the cage today except for cleaning.", "soft", ["general"]);
+            add("早安儀式：起床後立刻檢查鎖具，對鏡子說『我是鎖的奴隸』。", "Morning Ritual: Check lock and say 'I am a slave to the lock'.", "soft", ["general"]);
+            add("晚安確認：睡前檢查鎖具是否牢固，並感謝它的控制。", "Night Check: Ensure lock is secure and thank it for control.", "soft", ["general"]);
+            add("喝水提醒：每次喝水時，都要提醒自己下面是被鎖住的。", "Water Reminder: Remind yourself you are locked every time you drink.", "soft", ["general"]);
+            add("純潔飲食：今天只吃清淡的食物，保持身體潔淨。", "Pure Diet: Eat light today to keep body clean.", "soft", ["general"]);
+            add("坐姿小便：從今天開始，只能坐著如廁，無論環境。", "Sit to Pee: Sit down to urinate from now on.", "soft", ["general"]);
+            add("籠具對話：對著籠子說三聲『謝謝你保護我』。", "Cage Talk: Say 'Thank you for protecting me' to the cage 3 times.", "soft", ["general"]);
+            add("行走感知：走路時專注感受籠子與大腿的每一次摩擦。", "Walk Sense: Focus on the friction of the cage while walking.", "soft", ["general"]);
+            add("束縛冥想：靜坐 10 分鐘，將意識完全集中在鎖的冰冷感上。", "Bondage Meditation: Meditate on the coldness of the lock for 10 mins.", "soft", ["general"]);
+            add("絕對服從日：今天對任何人的合理要求都說『好』。", "Obedience Day: Say 'Yes' to any reasonable request today.", "soft", ["general"]);
             
-            [...nip_tasks, ...anal_tasks, ...urethra_tasks, ...pain_tasks, ...hum_tasks, ...bond_tasks, ...pub_tasks, ...sen_tasks, ...srv_tasks].forEach(item => {
-                let tag = "";
-                if(nip_tasks.includes(item)) tag = 'nipples';
-                if(anal_tasks.includes(item)) tag = 'anal';
-                if(urethra_tasks.includes(item)) tag = 'urethra';
-                if(pain_tasks.includes(item)) tag = 'pain';
-                if(hum_tasks.includes(item)) tag = 'humiliation';
-                if(bond_tasks.includes(item)) tag = 'bondage';
-                if(pub_tasks.includes(item)) tag = 'public';
-                if(sen_tasks.includes(item)) tag = 'sensory';
-                if(srv_tasks.includes(item)) tag = 'service';
-                db.push({tags:[tag], intensity:item.i, text_zh:item.t});
-            });
+            add("睡眠訓練：今晚必須佩戴著入睡，不允許半夜偷偷解開。", "Sleep Training: Sleep locked. No unlocking allowed.", "medium", ["general"]);
+            add("無內褲日：今天在家不穿內褲，只穿外褲感受籠子的摩擦。", "No Underwear: Wear only outer pants at home to feel the cage.", "medium", ["general"]);
+            add("冷水澡：佩戴著鎖進行 5 分鐘冷水淋浴，保持冷靜。", "Cold Shower: 5 min cold shower while locked.", "medium", ["general"]);
+            add("坐姿生活：今天在家無論做什麼，盡量保持坐姿或跪姿。", "Sitting Life: Stay seated or kneeling as much as possible at home.", "medium", ["general"]);
+            add("站立辦公：若環境允許，站立工作或上網 1 小時，感受重力。", "Stand Work: Stand for 1 hour while working to feel gravity.", "medium", ["general"]);
+            add("緊身褲日：穿上最緊的牛仔褲或內褲，勒緊籠子一整天。", "Tight Pants: Wear tight jeans/underwear all day.", "medium", ["general"]);
+            add("冰塊降溫：用冰塊在籠子表面滑動，直到完全融化。", "Ice Cooling: Slide ice on cage until melted.", "medium", ["general"]);
+            add("禁止翹腳：整天坐著時雙腿併攏，不准翹二郎腿。", "No Crossing Legs: Keep legs together when sitting.", "medium", ["general"]);
+            add("只穿圍裙：在家做家事時，只穿圍裙（內褲可選），感受涼意。", "Apron Only: Do chores in only an apron.", "medium", ["general"]);
+            add("禁慾宣告：對著鏡子大聲說三次『我不需要高潮』。", "Denial Declaration: Say 'I don't need orgasm' 3 times.", "medium", ["general"]);
+            add("地板時間：今天在家不准坐沙發，只能坐地板。", "Floor Time: Sit on the floor, not the sofa.", "medium", ["general"]);
+            
+            add("24小時極限：完全忽視它的存在，進行高強度有氧運動。", "24h Limit: Ignore it and do high-intensity cardio.", "hard", ["general"]);
+            add("鐵褲刑罰：睡覺時穿著牛仔褲，限制翻身與活動。", "Iron Pants: Sleep in jeans to restrict movement.", "hard", ["general"]);
+            add("絕對禁觸：雙手戴上防抓手套（或厚襪子）2 小時。", "No Touch Hard: Wear mittens/socks on hands for 2 hours.", "hard", ["general"]);
+            add("極限運動：佩戴著鎖進行 100 下開合跳。", "Extreme Sport: 100 Jumping Jacks locked.", "hard", ["general"]);
+            add("長時間跪姿：在硬地板上跪坐 30 分鐘，不准移動。", "Long Kneel: Kneel on hard floor for 30 mins.", "hard", ["general"]);
+            add("戶外感知：在戶外找一個沒人的地方，隔著褲子撫摸籠子。", "Outdoor Sense: Touch cage through pants outside in private.", "hard", ["general"]);
+            add("冰桶挑戰：將下半身浸泡在冰桶中 1 分鐘。", "Ice Bucket: Dip lower body in ice water for 1 min.", "hard", ["general"]);
+            add("絕對沉默：在家中保持 2 小時的絕對沉默。", "Silence: 2 hours of absolute silence at home.", "hard", ["general"]);
+            add("蒙眼生活：戴上眼罩生活 1 小時（注意安全）。", "Blind Life: Live blindfolded for 1 hour.", "hard", ["general"]);
+
+            // EDGING
+            add("邊緣控制：解鎖 15 分鐘，只能 Edge 3 次，嚴禁發射，重新上鎖。", "Edge Control: Unlock 15m, Edge 3x, No release.", "medium", ["edging"]);
+            add("視覺邊緣：看 10 分鐘色情片，不准觸碰，只能勃起。", "Visual Edge: Watch porn 10m, erect but no touch.", "medium", ["edging"]);
+            add("計數邊緣：手淫 50 下立刻停止，重複 3 組，最後上鎖。", "Count Edge: 50 strokes then stop. Repeat 3x. Lock.", "medium", ["edging"]);
+            add("隔靴搔癢：不解鎖，隔著籠子嘗試自慰 10 分鐘，感受挫折。", "Cage Stroke: Try to masturbate through cage 10m.", "medium", ["edging"]);
+            add("音頻引導：聽一段 JOI (指令自慰) 音頻，嚴格遵照指令停下。", "JOI: Listen to JOI audio and obey stops.", "medium", ["edging"]);
+            add("寸止地獄：觀看 20 分鐘影片並自慰，在快高潮前 1 秒停手並立刻上鎖。", "Edge Hell: Masturbate 20m, stop 1s before orgasm, lock.", "hard", ["edging"]);
+            add("冰塊冷卻：Edge 到邊緣後，立刻用冰塊敷在籠子上強行冷卻。", "Ice Cooldown: Edge then ice the cage immediately.", "hard", ["edging"]);
+            add("假高潮：在籠內嘗試達到高潮的感覺（Dry Hump），不准解鎖。", "Dry Hump: Try to orgasm inside cage.", "hard", ["edging"]);
+            add("毀滅高潮：解鎖，在即將高潮時用力捏住根部阻止快感（Ruined Orgasm）。", "Ruined: Unlock, squeeze base at climax to ruin it.", "hard", ["edging"]);
+
+            // NIPPLES
+            add("敏感喚醒：佩戴鎖具時，用手指捏住乳頭轉圈各 100 下。", "Nipple Wakeup: Pinch/rotate nipples 100x each.", "soft", ["nipples"]);
+            add("冰塊刺激：用冰塊在乳頭上畫圈直到融化。", "Ice Nipple: Circle ice on nipples until melted.", "soft", ["nipples"]);
+            add("乳頭梳理：用梳子輕輕梳理乳頭部位。", "Comb Nipple: Gently comb nipples.", "soft", ["nipples"]);
+            add("夾子刑罰：使用夾子夾住乳頭持續 10 分鐘，期間不得發出聲音。", "Clamp Pain: Clamp nipples 10m, stay silent.", "medium", ["nipples"]);
+            add("拉扯訓練：輕輕拉扯乳頭 50 下，感受痛與癢。", "Pulling: Pull nipples 50x gently.", "medium", ["nipples"]);
+            add("衣物摩擦：不穿上衣，穿著粗糙材質的外套摩擦乳頭 20 分鐘。", "Rough Rub: Rough jacket on bare nipples 20m.", "medium", ["nipples"]);
+            add("冷熱交替：先用熱毛巾敷，再用冰塊刺激乳頭，重複 3 次。", "Hot/Cold Nipple: Hot towel then ice, 3x.", "medium", ["nipples"]);
+            add("橡皮筋彈擊：用橡皮筋輕彈乳頭 10 下。", "Elastic Snap: Snap nipples with band 10x.", "medium", ["nipples"]);
+            add("負重練習：在乳夾上掛上輕微重物（如鑰匙串）站立 5 分鐘。", "Weighted: Hang keys on nipple clamps 5m.", "hard", ["nipples"]);
+            add("強力夾擊：使用強力燕尾夾夾住乳頭 5 分鐘。", "Binder Clip: Strong clip on nipples 5m.", "hard", ["nipples"]);
+            add("長時間夾：乳夾佩戴時間延長至 30 分鐘。", "Long Clamp: Clamp for 30 mins.", "hard", ["nipples"]);
+            add("乳頭跪姿：跪在地上，乳頭夾著夾子，保持上身挺直。", "Kneel Clamp: Kneel with clamps on, back straight.", "hard", ["nipples"]);
+            add("冰火夾：夾子冰鎮後夾上乳頭。", "Iced Clamps: Freeze clamps then apply.", "hard", ["nipples"]);
+
+            // ANAL
+            add("後庭感知：在籠中狀態下，嘗試放入一根手指或是小型塞子，適應 10 分鐘。", "Anal Sense: Insert finger/small plug 10m.", "medium", ["anal"]);
+            add("擴張準備：抹上潤滑液，嘗試放入中指，保持 5 分鐘。", "Dilate Prep: Lube and insert middle finger 5m.", "medium", ["anal"]);
+            add("冰火後庭：用溫水沖洗後庭，再嘗試放入冰過的塞子（小心）。", "Fire Ice Anal: Warm wash then cold plug.", "medium", ["anal"]);
+            add("括約肌訓練：夾緊後庭 5 秒再放鬆，重複 50 組。", "Sphincter Gym: Clench anal 5s then relax, 50x.", "medium", ["anal"]);
+            add("指險探秘：嘗試用兩根手指擴張後庭。", "Two Fingers: Try inserting two fingers.", "medium", ["anal"]);
+            add("異物充盈：佩戴中型塞子進行日常活動（如做家事、看書）30 分鐘。", "Plugged Task: Medium plug during chores 30m.", "hard", ["anal"]);
+            add("雙重鎖定：前面戴籠，後面戴塞，維持 1 小時。", "Double Lock: Cage + Plug for 1 hour.", "hard", ["anal"]);
+            add("睡眠塞：嘗試佩戴較小的塞子入睡（若不適請立即停止）。", "Sleep Plug: Try sleeping with small plug.", "hard", ["anal"]);
+            add("排便後塞：排便清潔後，立刻塞入塞子保持空虛感消失。", "Post-Poo Plug: Plug immediately after cleaning.", "hard", ["anal"]);
+            add("長時間擴張：佩戴中型塞子觀看一部電影。", "Movie Plug: Wear plug during a movie.", "hard", ["anal"]);
+            add("行走訓練：佩戴塞子在家中快走 10 分鐘。", "Plug Walk: Power walk at home with plug 10m.", "hard", ["anal"]);
+
+            // URETHRA
+            add("坐姿排泄：從今天起，這一個月內你只能像女生一樣坐著尿尿。", "Sit Pee: Sit to pee for the month.", "soft", ["urethra"]);
+            add("排尿觀察：排尿時仔細觀察尿液如何流過籠子。", "Pee Watch: Watch pee flow through cage.", "soft", ["urethra"]);
+            add("飲水控制：大量飲水後忍耐 45 分鐘，感受膀胱與鎖具的雙重壓力。", "Water Hold: Drink and hold 45m.", "medium", ["urethra"]);
+            add("中斷練習：尿尿時嘗試中斷 3 次，感受尿道被控制。", "Stop Start: Stop peeing 3 times mid-stream.", "medium", ["urethra"]);
+            add("觀賞排泄：對著鏡子排泄，觀察尿液穿過籠子的樣子。", "Mirror Pee: Pee in front of mirror.", "medium", ["urethra"]);
+            add("定時排泄：設定鬧鐘，每 3 小時才允許去一次廁所。", "Timed Pee: Pee only every 3 hours.", "medium", ["urethra"]);
+            add("極限忍耐：有尿意後再忍耐 30 分鐘才能去廁所。", "Extreme Hold: Hold 30m after urge.", "hard", ["urethra"]);
+            add("憋尿深蹲：在膀胱充盈的狀態下做 10 個深蹲（小心失禁）。", "Full Squat: 10 squats with full bladder.", "hard", ["urethra"]);
+            add("憋尿勃起：在憋尿狀態下看色情圖片，感受雙重壓力。", "Full Erect: Arouse yourself while holding pee.", "hard", ["urethra"]);
+            add("罰站憋尿：有尿意後罰站 15 分鐘才能去廁所。", "Stand Hold: Stand 15m after urge before peeing.", "hard", ["urethra"]);
+
+            // PAIN
+            add("體能獻祭：全裸深蹲 50 下，讓籠子拍打你的大腿內側。", "Squat Pain: 50 naked squats hitting cage.", "medium", ["pain"]);
+            add("拍打練習：用尺或板子拍打臀部 50 下，必須聽到清脆聲響。", "Spank: 50 spanks with ruler/paddle.", "medium", ["pain"]);
+            add("跪姿反省：跪在硬地板上 20 分鐘，雙手背後。", "Kneel Pain: Kneel on hard floor 20m.", "medium", ["pain"]);
+            add("大腿內側捏：用手捏大腿內側的嫩肉 20 下。", "Thigh Pinch: Pinch inner thigh 20x.", "medium", ["pain"]);
+            add("冰水浸泡：將籠子與陰囊浸泡在冰水中 30 秒。", "Ice Dip: Dip cage/balls in ice water 30s.", "medium", ["pain"]);
+            add("彈力懲罰：用橡皮筋或彈擊籠身 20 下，每一聲都是對慾望的告解。", "Snap Punishment: Snap cage with band 20x.", "hard", ["pain"]);
+            add("夾子夾大腿：用夾子夾住大腿內側敏感肉 5 分鐘。", "Thigh Clamp: Clamp inner thigh 5m.", "hard", ["pain"]);
+            add("睪丸拍打：輕輕拍打睪丸 50 下，保持籠子不動。", "Ball Slap: Slap balls 50x.", "hard", ["pain"]);
+            add("跪姿跳躍：跪著進行 10 次跳躍（膝蓋著地跳），感受震動痛。", "Knee Jump: 10 knee jumps.", "hard", ["pain"]);
+            add("打蛋器：用手指彈擊睪丸 20 下。", "Ball Flick: Flick balls 20x.", "hard", ["pain"]);
+            add("掐大腿：每當有慾望時，用力掐大腿內側一下。", "Urge Pinch: Pinch thigh on urge.", "hard", ["pain"]);
+
+            // HUMILIATION
+            add("自我貶低：在身上用口紅寫下『Property (財產)』，拍照存檔。", "Self Degrade: Write 'Property' on body.", "medium", ["humiliation"]);
+            add("寵物視角：佩戴著鎖在地上爬行 10 分鐘，像狗一樣。", "Pet View: Crawl like a dog 10m.", "medium", ["humiliation"]);
+            add("對鏡自罵：看著鏡子裡的籠子，大聲說出 10 個自己淫蕩的理由。", "Mirror Scold: List 10 reasons you are slutty.", "medium", ["humiliation"]);
+            add("項圈佩戴：在家戴上項圈一整天，提醒自己的身份。", "Collar Day: Wear collar at home all day.", "medium", ["humiliation"]);
+            add("拍攝籠照：拍一張籠子的特寫，不需要露臉，存為手機桌布一天。", "Cage Photo: Set cage pic as wallpaper 1 day.", "medium", ["humiliation"]);
+            add("視覺羞恥：穿著能透出鎖形狀的褲子去倒垃圾或超商買水。", "Visible Shame: Wear pants showing cage outline out.", "hard", ["humiliation"]);
+            add("垃圾桶視角：跪在垃圾桶旁進食一餐。", "Trash Eat: Eat meal next to trash can.", "hard", ["humiliation"]);
+            add("口紅塗鴉：用口紅塗滿籠子，然後戴著它過一天。", "Lipstick Cage: Paint cage with lipstick, wear all day.", "hard", ["humiliation"]);
+            add("報數練習：一邊自打屁股一邊大聲報數『我是賤狗1、我是賤狗2...』至 50。", "Count Spank: Spank and count 'I am a dog 1...'", "hard", ["humiliation"]);
+            add("跪姿喝水：像狗一樣，不用手，直接從碗裡喝水。", "Dog Drink: Drink from bowl no hands.", "hard", ["humiliation"]);
+
+            // BONDAGE
+            add("繩縛靜坐：將雙手反綁在背後，跪坐 20 分鐘，不准移動。", "Tie Sit: Hands tied back, kneel 20m.", "medium", ["bondage"]);
+            add("口球體驗：戴上口球（或咬住毛巾）30 分鐘，只能用鼻子呼吸。", "Gagged: Wear gag 30m.", "medium", ["bondage"]);
+            add("單手生活：將慣用手綁在身後，只用另一隻手生活 2 小時。", "One Hand: Tie dominant hand back 2h.", "medium", ["bondage"]);
+            add("併腿縛：將雙膝與腳踝綁在一起，試著在家移動 30 分鐘。", "Leg Tie: Tie knees/ankles, move around 30m.", "medium", ["bondage"]);
+            add("四肢剝奪：睡覺時必須戴上眼罩並稍微束縛雙手，體驗無助感。", "Limb Loss: Sleep blindfolded and bound.", "hard", ["bondage"]);
+            add("木乃伊：用保鮮膜或床單將自己緊緊裹住，靜躺 20 分鐘。", "Mummy: Wrap self tight in sheet 20m.", "hard", ["bondage"]);
+            add("反綁睡眠：嘗試雙手反綁（鬆鬆的）入睡。", "Bound Sleep: Sleep hands tied back.", "hard", ["bondage"]);
+            add("龜甲縛：(若會) 嘗試給自己綁上龜甲縛並佩戴籠子 1 小時。", "Shibari: Self-tie shibari 1h.", "hard", ["bondage"]);
+            add("封口令：用膠帶封住嘴巴 1 小時。", "Tape Mouth: Tape mouth shut 1h.", "hard", ["bondage"]);
+
+            // PUBLIC
+            add("真空散步：不穿內褲，只穿寬鬆褲子在住家附近散步 10 分鐘。", "Commando: Walk outside no underwear 10m.", "medium", ["public"]);
+            add("樓梯間冒險：在深夜確認無人的情況下，去樓梯間站立 3 分鐘。", "Stair Dare: Stand in stairwell 3m at night.", "medium", ["public"]);
+            add("車內露出：在自己的車內（停在隱蔽處）脫下褲子觀察籠子 5 分鐘。", "Car Flash: Expose cage in car 5m.", "medium", ["public"]);
+            add("緊身運動：穿著緊身運動褲去公園慢跑，感受籠子的輪廓。", "Tight Jog: Jog in tight pants.", "medium", ["public"]);
+            add("陽台放風：在隱密的陽台或窗邊全裸佩戴鎖具站立 5 分鐘。", "Balcony: Naked on balcony 5m.", "hard", ["public"]);
+            add("超市挑戰：在超市購買一根香蕉或黃瓜，想像它是用來做什麼的。", "Market Dare: Buy cucumber/banana imagining things.", "hard", ["public"]);
+            add("公廁檢視：在公共廁所的隔間內，檢查並欣賞自己的鎖具。", "Public Restroom: Check cage in public stall.", "hard", ["public"]);
+            add("大膽倒垃圾：只穿一件長大衣去倒垃圾（內裡全裸+籠子）。", "Trash Run: Coat only take out trash.", "hard", ["public"]);
+
+            // SENSORY
+            add("黑暗晚餐：戴上眼罩進食晚餐，全程不得發出聲音。", "Dark Dinner: Eat blindfolded silently.", "medium", ["sensory"]);
+            add("聽覺剝奪：戴上降噪耳機或耳塞 2 小時，專注於下體的束縛感。", "Deaf Mode: Earplugs for 2h.", "medium", ["sensory"]);
+            add("冰塊遊戲：閉眼，隨機用冰塊觸碰身體不同部位，不准躲避。", "Ice Game: Eyes closed, random ice touch.", "medium", ["sensory"]);
+            add("羽毛搔癢：用羽毛或筆尖輕掃全身敏感帶，除了籠子部位。", "Feather: Tickle body except cage.", "medium", ["sensory"]);
+            add("感官隔離：眼罩+耳塞，在床上靜躺 30 分鐘，只能感受下體的束縛。", "Iso Tank: Blindfold+Earplugs lie still 30m.", "hard", ["sensory"]);
+            add("溫差澡：熱水淋浴後瞬間切換全冷水，感受身體的震顫。", "Shock Shower: Hot then instant cold shower.", "hard", ["sensory"]);
+            add("蒙眼觸摸：蒙眼後，用不同材質（絲綢、菜瓜布）觸摸籠子。", "Blind Touch: Touch cage with textures blind.", "hard", ["sensory"]);
+
+            // SERVICE
+            add("籠具清潔：用牙刷仔細清潔籠具的每一個縫隙，像對待聖物一樣。", "Clean Cage: Clean cage meticulously.", "soft", ["service"]);
+            add("跪姿擦地：全裸佩戴鎖具，用抹布跪著擦拭家裡的地板。", "Floor Wipe: Clean floor naked kneeling.", "medium", ["service"]);
+            add("手寫合約：抄寫『我自願將控制權交出』50 遍。", "Write Contract: Write 'I surrender control' 50x.", "medium", ["service"]);
+            add("整理聖壇：整理放置情趣用品或鎖具鑰匙的地方，保持一塵不染。", "Altar Clean: Clean toy/key storage area.", "medium", ["service"]);
+            add("為主人倒水：跪著倒一杯水，想像呈給主人。", "Serve Water: Kneel and serve water to phantom master.", "medium", ["service"]);
+            add("足部侍奉：想像主人的腳在面前，進行空氣舔舐與按摩 10 分鐘。", "Foot Service: Worship phantom feet 10m.", "hard", ["service"]);
+            add("絕對跪姿：在家看電視或滑手機時，必須保持跪姿 30 分鐘。", "Strict Kneel: Kneel while watching TV 30m.", "hard", ["service"]);
+            add("鍵盤跪：(若有舊鍵盤) 膝蓋跪在鍵盤上 5 分鐘。", "Keyboard Kneel: Kneel on old keyboard 5m.", "hard", ["service"]);
 
             return db;
         };
@@ -276,6 +365,7 @@
           const exportRef = useRef(null); 
           const [libLoaded, setLibLoaded] = useState(false);
           const [lang, setLang] = useState('zh-TW');
+          const [isTranslating, setIsTranslating] = useState(false);
 
           useEffect(() => {
             if(window.html2canvas) setLibLoaded(true);
@@ -303,31 +393,38 @@
 
           const handlePrefChange = (key, val) => setUserData(prev => ({ ...prev, prefs: { ...prev.prefs, [key]: val } }));
 
+          const handleLangChange = (e) => {
+              const newLang = e.target.value;
+              setIsTranslating(true);
+              setLang(newLang);
+              // Fake translation effect duration
+              setTimeout(() => {
+                  setIsTranslating(false);
+              }, 800);
+          };
+
           // --- DYNAMIC ICON SELECTOR ---
           const getIconByContent = (taskText, tags, type) => {
-            const props = { className: `w-full h-full opacity-15 ${currentTheme.text}` }; // Opacity increased to 15%
+            const props = { className: `w-full h-full opacity-15 ${currentTheme.text}` }; 
             
-            // 1. Special Days
             if (type === 'start') return <Lock {...props} className={`w-full h-full opacity-30 ${currentTheme.accent}`} />;
             if (type === 'end') return <Key {...props} className={`w-full h-full opacity-30 ${currentTheme.accent}`} />;
             if (type === 'check') return <ShieldAlert {...props} className={`w-full h-full opacity-30 text-yellow-500`} />;
 
-            // 2. Keyword Matching (Content-based)
             const text = taskText || "";
-            if (text.includes("冰") || text.includes("冷")) return <Snowflake {...props} />;
-            if (text.includes("睡") || text.includes("晚")) return <Moon {...props} />;
-            if (text.includes("早") || text.includes("起")) return <Sun {...props} />;
-            if (text.includes("走") || text.includes("步") || text.includes("行")) return <Footprints {...props} />;
-            if (text.includes("潔") || text.includes("洗")) return <Sparkles {...props} />;
-            if (text.includes("寫") || text.includes("記")) return <Pen {...props} />;
-            if (text.includes("水") || text.includes("尿") || text.includes("飲")) return <Droplet {...props} />; // Specific for water/liquid
-            if (text.includes("口") || text.includes("吃") || text.includes("喝")) return <Coffee {...props} />;
-            if (text.includes("音") || text.includes("聽")) return <Music {...props} />;
-            if (text.includes("拍") || text.includes("照")) return <Camera {...props} />;
-            if (text.includes("讀") || text.includes("書")) return <Book {...props} />;
-            if (text.includes("跪") || text.includes("坐")) return <Activity {...props} />; // Posture
+            if (text.includes("冰") || text.includes("冷") || text.includes("Ice")) return <Snowflake {...props} />;
+            if (text.includes("睡") || text.includes("晚") || text.includes("Sleep")) return <Moon {...props} />;
+            if (text.includes("早") || text.includes("起") || text.includes("Morning")) return <Sun {...props} />;
+            if (text.includes("走") || text.includes("步") || text.includes("行") || text.includes("Walk")) return <Footprints {...props} />;
+            if (text.includes("潔") || text.includes("洗") || text.includes("Clean")) return <Sparkles {...props} />;
+            if (text.includes("寫") || text.includes("記") || text.includes("Write")) return <Pen {...props} />;
+            if (text.includes("水") || text.includes("尿") || text.includes("飲") || text.includes("Water") || text.includes("Pee")) return <Droplet {...props} />; 
+            if (text.includes("口") || text.includes("吃") || text.includes("喝") || text.includes("Eat")) return <Coffee {...props} />;
+            if (text.includes("音") || text.includes("聽") || text.includes("Listen")) return <Music {...props} />;
+            if (text.includes("拍") || text.includes("照") || text.includes("Photo")) return <Camera {...props} />;
+            if (text.includes("讀") || text.includes("書") || text.includes("Read")) return <Book {...props} />;
+            if (text.includes("跪") || text.includes("坐") || text.includes("Sit") || text.includes("Kneel")) return <Activity {...props} />; 
 
-            // 3. Category Fallbacks
             if (tags.includes('nipples')) return <Disc {...props} />;
             if (tags.includes('anal')) return <Activity {...props} />;
             if (tags.includes('urethra')) return <Droplet {...props} />;
@@ -339,13 +436,28 @@
             if (tags.includes('service')) return <Ruler {...props} />;
             if (tags.includes('sensory')) return <Headphones {...props} />;
             
-            // 4. General Fallback
             return <CalendarIcon {...props} />;
           };
 
-          // Simplified text getter
-          const getTaskText = (taskObj) => {
-             return taskObj.text_zh; 
+          // --- SMART TEXT GETTER (UPDATED LOGIC) ---
+          const getTaskText = (taskObj, currentLang) => {
+             // 1. Try exact translation
+             if (taskObj.text && taskObj.text[currentLang]) {
+                 return taskObj.text[currentLang];
+             }
+             
+             // 2. If English is selected and exists, fallback to EN
+             if (currentLang === 'en' && taskObj.text['en']) return taskObj.text['en'];
+             
+             // 3. Fallback: Return English content (Global Standard) instead of Category Placeholder
+             // This ensures users see specific tasks like "Sit to pee" in English
+             // rather than just "URETHRA TRAINING (SOFT)" in their language.
+             if (taskObj.text['en']) return taskObj.text['en'];
+             
+             // 4. Last resort: Chinese
+             if (taskObj.text['zh-TW']) return taskObj.text['zh-TW'];
+             
+             return "Task";
           };
 
           const generateProtocol = () => {
@@ -355,7 +467,6 @@
 
             let weightedPool = [];
             
-            // Build Pool
             Object.entries(userData.prefs).forEach(([key, rating]) => {
               if (rating > 1) {
                 const tagTasks = TASKS_DB.filter(t => t.tags.includes(key));
@@ -365,45 +476,40 @@
               }
             });
 
-            // Always add General tasks
             const generalTasks = TASKS_DB.filter(t => t.tags.includes('general'));
             weightedPool.push(...generalTasks);
             weightedPool.push(...generalTasks);
 
-            // Filter by intensity
             weightedPool = weightedPool.filter(task => {
               if (userData.level === 'soft') return task.intensity === 'soft';
               if (userData.level === 'medium') return task.intensity !== 'hard';
               return true;
             });
 
-            // Shuffle
             const shuffledPool = [...weightedPool].sort(() => Math.random() - 0.5);
 
-            // Strict Unique Selection
             const selectedTasks = [];
             const usedTexts = new Set();
             
             for (const task of shuffledPool) {
-              if (!usedTexts.has(task.text_zh)) {
+              const keyText = task.text['zh-TW'];
+              if (!usedTexts.has(keyText)) {
                 selectedTasks.push(task);
-                usedTexts.add(task.text_zh);
+                usedTexts.add(keyText);
               }
               if (selectedTasks.length >= daysInMonth) break;
             }
 
-            // Fill leftover
             if (selectedTasks.length < daysInMonth) {
-                const unusedGeneral = TASKS_DB.filter(t => t.tags.includes('general') && !usedTexts.has(t.text_zh));
+                const unusedGeneral = TASKS_DB.filter(t => t.tags.includes('general') && !usedTexts.has(t.text['zh-TW']));
                 const extraTasks = unusedGeneral.sort(() => Math.random() - 0.5);
                 for(const task of extraTasks) {
                     selectedTasks.push(task);
-                    usedTexts.add(task.text_zh);
+                    usedTexts.add(task.text['zh-TW']);
                     if (selectedTasks.length >= daysInMonth) break;
                 }
             }
 
-            // Random fill if absolutely needed
             while (selectedTasks.length < daysInMonth) {
                selectedTasks.push(shuffledPool[Math.floor(Math.random() * shuffledPool.length)]);
             }
@@ -420,7 +526,7 @@
               let type = "normal";
               days.push({ 
                 day: i, 
-                task: taskObj.text_zh, 
+                taskObj: taskObj, 
                 tags: taskObj.tags || ['general'], 
                 type 
               });
@@ -484,7 +590,16 @@
           );
 
           return (
-            <div className={`min-h-screen ${currentTheme.bg} ${currentTheme.text} font-sans pb-20 overflow-x-hidden transition-colors duration-500`}>
+            <div className={`min-h-screen ${currentTheme.bg} ${currentTheme.text} font-sans pb-20 overflow-x-hidden transition-colors duration-500 relative`}>
+              {/* GLOBAL TRANSLATION OVERLAY */}
+              {isTranslating && (
+                <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center pointer-events-none animate-in fade-in duration-300">
+                    <div className={`text-4xl font-black tracking-[0.3em] ${currentTheme.accent} animate-pulse`}>
+                        {t.processing || 'PROCESSING...'}
+                    </div>
+                </div>
+              )}
+
               {/* Header */}
               <header className={`backdrop-blur-md sticky top-0 z-40 border-b ${currentTheme.border} p-4 bg-black/20`}>
                 <div className="max-w-4xl mx-auto flex justify-between items-center">
@@ -496,7 +611,7 @@
                     <div className="text-[10px] opacity-50 font-mono mt-1 ml-8">By @ARNO19450</div>
                   </div>
                   <div className="flex items-center gap-4">
-                     <select value={lang} onChange={(e) => setLang(e.target.value)} className={`bg-transparent border ${currentTheme.border} text-xs p-1 rounded ${currentTheme.text} opacity-70 hover:opacity-100 focus:outline-none`}>
+                     <select value={lang} onChange={handleLangChange} className={`bg-transparent border ${currentTheme.border} text-xs p-1 rounded ${currentTheme.text} opacity-70 hover:opacity-100 focus:outline-none`}>
                        <option value="zh-TW">繁體中文</option>
                        <option value="en">English</option>
                        <option value="jp">日本語</option>
@@ -523,7 +638,10 @@
                     <div className={`w-24 h-24 rounded-full mx-auto flex items-center justify-center border-2 shadow-[0_0_30px_rgba(0,0,0,0.2)] ${currentTheme.card} ${currentTheme.border}`}>
                       <Key className={`w-10 h-10 ${currentTheme.accent}`} />
                     </div>
-                    <div className="space-y-4"><h2 className="text-3xl font-bold">{t.intro_title}</h2><p className="opacity-70 leading-relaxed text-lg">{t.intro_desc(currentTheme.accent)}</p></div>
+                    <div className="space-y-4">
+                        <h2 className="text-3xl font-bold">{t.intro_title}</h2>
+                        <p className="opacity-70 leading-relaxed text-lg">{t.intro_desc(currentTheme.accent)}</p>
+                    </div>
                     <button onClick={() => setStep(1)} className={`group relative px-8 py-4 ${currentTheme.card} font-bold tracking-widest overflow-hidden rounded border ${currentTheme.border} hover:border-current transition-all`}>
                       <span className={`relative z-10 flex items-center gap-2 ${currentTheme.accent}`}>{t.btn_start} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform"/></span>
                     </button>
@@ -565,7 +683,7 @@
                     </div>
 
                     <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
-                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Palette className="w-4 h-4"/> {t.step1_theme_title}</h3>
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><PaletteIcon className="w-4 h-4"/> {t.step1_theme_title}</h3>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {Object.values(THEMES).map(th => {
                           const btnStyle = { backgroundColor: th.id === 'clinical' || th.id === 'mono' ? '#f1f5f9' : '#1c1917' };
@@ -584,6 +702,21 @@
 
                 {step === 2 && (
                   <div className="animate-slide-up relative">
+                    {/* Theme Switcher in Step 2 */}
+                    <div className={`${currentTheme.card} border ${currentTheme.border} p-4 rounded-lg mb-6 flex flex-wrap items-center justify-center gap-4`}>
+                        <div className={`flex items-center gap-2 ${currentTheme.text} opacity-70 mr-2`}>
+                            <PaletteIcon className="w-5 h-5" />
+                        </div>
+                        {Object.values(THEMES).map(th => {
+                          const btnStyle = { backgroundColor: th.id === 'clinical' || th.id === 'mono' ? '#f1f5f9' : '#1c1917' };
+                          return (
+                            <button key={th.id} onClick={() => setUserData({...userData, theme: th.id})} className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${userData.theme === th.id ? `${currentTheme.border} ring-2 ring-offset-1 ring-offset-transparent ring-current` : 'border-transparent opacity-50 hover:opacity-100'}`} style={btnStyle} title={th.name}>
+                              <div className={`w-4 h-4 rounded-full ${th.colors.accentBg}`}></div>
+                            </button>
+                          );
+                        })}
+                    </div>
+
                     <div className={`flex flex-col md:flex-row justify-between items-end mb-6 border-b ${currentTheme.border} pb-4 gap-4`}>
                       <div><h2 className="text-3xl font-black uppercase">{userData.name} {t.step2_title}</h2><div className="flex gap-4 text-sm opacity-60 mt-1 font-mono"><span>{userData.year} / {userData.month}</span><span>Lv: {userData.level.toUpperCase()}</span></div></div>
                       <div className="flex gap-2">
@@ -592,31 +725,33 @@
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-7 gap-1 md:gap-3">
-                      {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (<div key={d} className="text-center text-xs opacity-40 font-mono py-2">{d}</div>))}
-                      {calendar.map((day, idx) => (
-                        day.type === 'empty' ? (<div key={`empty-${idx}`} className="hidden md:block"></div>) : (
-                          <div key={day.day} onClick={() => setSelectedDay(day)} className={`relative p-2 md:p-3 rounded border transition-all cursor-pointer group flex flex-col min-h-[120px] ${currentTheme.card} ${currentTheme.border} ${currentTheme.cardHover}`}>
-                            <div className="absolute right-1 bottom-1 w-12 h-12 pointer-events-none">{getIconByContent(day.task, day.tags, day.type)}</div>
-                            <div className="flex justify-between items-start z-10 mb-2">
-                              <span className={`text-lg md:text-xl font-black font-mono ${day.type === 'start' || day.type === 'end' ? currentTheme.accent : 'opacity-40 group-hover:opacity-80'}`}>{String(day.day).padStart(2, '0')}</span>
-                              {day.type === 'start' && <Lock className={`w-4 h-4 ${currentTheme.accent}`} />}
-                              {day.type === 'end' && <Key className={`w-4 h-4 ${currentTheme.accent}`} />}
-                              {day.type === 'check' && <ShieldAlert className="w-4 h-4 text-yellow-600" />}
-                            </div>
-                            <p className="text-[11px] md:text-xs opacity-70 leading-relaxed z-10 break-words whitespace-normal">{day.task}</p>
-                          </div>
-                        )
-                      ))}
+                    <div className="relative">
+                        <div className={`grid grid-cols-7 gap-1 md:gap-3 transition-opacity duration-300 ${isTranslating ? 'opacity-20' : 'opacity-100'}`}>
+                          {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => (<div key={d} className="text-center text-xs opacity-40 font-mono py-2">{d}</div>))}
+                          {calendar.map((day, idx) => (
+                            day.type === 'empty' ? (<div key={`empty-${idx}`} className="hidden md:block"></div>) : (
+                              <div key={day.day} onClick={() => setSelectedDay(day)} className={`relative p-2 md:p-3 rounded border transition-all cursor-pointer group flex flex-col min-h-[120px] ${currentTheme.card} ${currentTheme.border} ${currentTheme.cardHover}`}>
+                                <div className="absolute right-1 bottom-1 w-12 h-12 pointer-events-none">{getIconByContent(getTaskText(day.taskObj, lang), day.tags, day.type)}</div>
+                                <div className="flex justify-between items-start z-10 mb-2">
+                                  <span className={`text-lg md:text-xl font-black font-mono ${day.type === 'start' || day.type === 'end' ? currentTheme.accent : 'opacity-40 group-hover:opacity-80'}`}>{String(day.day).padStart(2, '0')}</span>
+                                  {day.type === 'start' && <Lock className={`w-4 h-4 ${currentTheme.accent}`} />}
+                                  {day.type === 'end' && <Key className={`w-4 h-4 ${currentTheme.accent}`} />}
+                                  {day.type === 'check' && <ShieldAlert className="w-4 h-4 text-yellow-600" />}
+                                </div>
+                                <p className={`text-[11px] md:text-xs opacity-70 leading-relaxed z-10 break-words whitespace-normal`}>{getTaskText(day.taskObj, lang)}</p>
+                              </div>
+                            )
+                          ))}
+                        </div>
                     </div>
 
                     {selectedDay && selectedDay.type !== 'empty' && (
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setSelectedDay(null)}>
                         <div className={`${currentTheme.modal} border-2 p-6 rounded-lg max-w-sm w-full shadow-2xl relative ${currentTheme.bg}`} onClick={e => e.stopPropagation()}>
                           <button onClick={() => setSelectedDay(null)} className="absolute top-3 right-3 opacity-50 hover:opacity-100"><XIcon className="w-5 h-5"/></button>
-                          <div className="flex justify-center mb-6"><div className={`w-20 h-20 rounded-full bg-black/20 flex items-center justify-center p-4 ${currentTheme.border} border`}>{getIconByContent(selectedDay.task, selectedDay.tags, selectedDay.type)}</div></div>
+                          <div className="flex justify-center mb-6"><div className={`w-20 h-20 rounded-full bg-black/20 flex items-center justify-center p-4 ${currentTheme.border} border`}>{getIconByContent(getTaskText(selectedDay.taskObj, lang), selectedDay.tags, selectedDay.type)}</div></div>
                           <h3 className={`${currentTheme.accent} font-mono text-lg font-bold mb-4 border-b ${currentTheme.border} pb-2 text-center`}>{userData.year}.{userData.month}.{String(selectedDay.day).padStart(2,'0')}</h3>
-                          <p className={`text-lg leading-relaxed font-medium ${currentTheme.text} text-center`}>{selectedDay.task}</p>
+                          <p className={`text-lg leading-relaxed font-medium ${currentTheme.text} text-center`}>{getTaskText(selectedDay.taskObj, lang)}</p>
                         </div>
                       </div>
                     )}
@@ -647,10 +782,10 @@
                       {calendar.map((day, idx) => (
                         day.type === 'empty' ? (<div key={`exp-empty-${idx}`} className="border-transparent"></div>) : (
                           <div key={day.day} className={`border ${currentTheme.border} p-3 relative flex flex-col h-full overflow-hidden ${day.type === 'start' || day.type === 'end' ? 'bg-black/10' : ''}`}>
-                            <div className="absolute right-1 bottom-1 w-12 h-12 pointer-events-none">{getIconByContent(day.task, day.tags, day.type)}</div>
+                            <div className="absolute right-1 bottom-1 w-12 h-12 pointer-events-none">{getIconByContent(getTaskText(day.taskObj, lang), day.tags, day.type)}</div>
                             <span className={`text-2xl font-bold font-mono mb-1 ${day.type === 'check' ? 'text-yellow-500' : 'opacity-40'}`}>{day.day}</span>
                             {/* Adjusted Font Size for readability and fitting */}
-                            <p className="text-[15px] leading-tight opacity-90 relative z-10 whitespace-normal break-words font-medium">{day.task}</p>
+                            <p className="text-[15px] leading-tight opacity-90 relative z-10 whitespace-normal break-words font-medium">{getTaskText(day.taskObj, lang)}</p>
                           </div>
                         )
                       ))}
