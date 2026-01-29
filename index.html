@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,35 +19,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
-        /* Custom Animations needed for the UI */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-        .animate-slide-up {
-            animation: slideUp 0.6s ease-out forwards;
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1c1917; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #44403c; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #57534e; 
-        }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        
+        body { font-family: 'Noto Sans TC', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1c1917; }
+        ::-webkit-scrollbar-thumb { background: #44403c; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #57534e; }
     </style>
 </head>
 <body class="bg-stone-950 text-stone-200">
@@ -56,387 +43,197 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- ICON COMPONENTS (Manually defined for CDN compatibility) ---
+        // --- ICONS ---
         const IconBase = ({ d, className }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                {d}
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{d}</svg>
         );
+        const Lock = (p) => <IconBase {...p} d={<><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></>} />;
+        const Key = (p) => <IconBase {...p} d={<><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"></path></>} />;
+        const CalendarIcon = (p) => <IconBase {...p} d={<><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></>} />;
+        const ShieldAlert = (p) => <IconBase {...p} d={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></>} />;
+        const RefreshCcw = (p) => <IconBase {...p} d={<><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></>} />;
+        const XIcon = (p) => <IconBase {...p} d={<><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></>} />;
+        const Activity = (p) => <IconBase {...p} d={<><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></>} />;
+        const Download = (p) => <IconBase {...p} d={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></>} />;
+        const Eye = (p) => <IconBase {...p} d={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></>} />;
+        const Zap = (p) => <IconBase {...p} d={<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></>} />;
+        const Disc = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></>} />;
+        const Palette = (p) => <IconBase {...p} d={<><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></>} />;
+        const Droplet = (p) => <IconBase {...p} d={<><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></>} />;
+        const Ghost = (p) => <IconBase {...p} d={<><path d="M9 22l1-2.5 2 2.5 2-2.5 2 2.5 1-2.5V9a7 7 0 0 0-7-7 7 7 0 0 0-7 7v10.5L9 22z"></path><path d="M9 9h.01"></path><path d="M15 9h.01"></path></>} />;
+        const Flame = (p) => <IconBase {...p} d={<><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></>} />;
+        const Anchor = (p) => <IconBase {...p} d={<><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></>} />;
+        const Globe = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></>} />;
+        const Ruler = (p) => <IconBase {...p} d={<><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0l12.6 12.6z"></path><line x1="14.5" y1="5.5" x2="18.5" y2="9.5"></line><line x1="10.5" y1="9.5" x2="14.5" y2="13.5"></line><line x1="6.5" y1="13.5" x2="10.5" y2="17.5"></line></>} />;
+        const Headphones = (p) => <IconBase {...p} d={<><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></>} />;
+        const ChevronRight = (p) => <IconBase {...p} d={<><polyline points="9 18 15 12 9 6"></polyline></>} />;
+        const Smile = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></>} />;
 
-        const Lock = (props) => <IconBase {...props} d={<><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></>} />;
-        const Key = (props) => <IconBase {...props} d={<><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3m-3.5 3.5L19 4"></path></>} />;
-        
-        // FIXED: Renamed CalendarIcon to Calendar to match usage
-        const Calendar = (props) => <IconBase {...props} d={<><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></>} />;
-        
-        const ShieldAlert = (props) => <IconBase {...props} d={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></>} />;
-        const CheckCircle = (props) => <IconBase {...props} d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></>} />;
-        const RefreshCcw = (props) => <IconBase {...props} d={<><path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path></>} />;
-        
-        // FIXED: Renamed XIcon to X to match usage
-        const X = (props) => <IconBase {...props} d={<><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></>} />;
-        
-        const Activity = (props) => <IconBase {...props} d={<><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></>} />;
-        const Thermometer = (props) => <IconBase {...props} d={<><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></>} />;
-        const ChevronRight = (props) => <IconBase {...props} d={<><polyline points="9 18 15 12 9 6"></polyline></>} />;
-        const Download = (props) => <IconBase {...props} d={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></>} />;
-        const Eye = (props) => <IconBase {...props} d={<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></>} />;
-        const Zap = (props) => <IconBase {...props} d={<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></>} />;
-        const Disc = (props) => <IconBase {...props} d={<><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></>} />;
-        const Palette = (props) => <IconBase {...props} d={<><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></>} />;
-        const Droplet = (props) => <IconBase {...props} d={<><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></>} />;
-        const Ghost = (props) => <IconBase {...props} d={<><path d="M9 22l1-2.5 2 2.5 2-2.5 2 2.5 1-2.5V9a7 7 0 0 0-7-7 7 7 0 0 0-7 7v10.5L9 22z"></path><path d="M9 9h.01"></path><path d="M15 9h.01"></path></>} />;
-        const Flame = (props) => <IconBase {...props} d={<><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></>} />;
-        const Anchor = (props) => <IconBase {...props} d={<><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></>} />;
-        const Globe = (props) => <IconBase {...props} d={<><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></>} />;
-        const Ruler = (props) => <IconBase {...props} d={<><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0l12.6 12.6z"></path><line x1="14.5" y1="5.5" x2="18.5" y2="9.5"></line><line x1="10.5" y1="9.5" x2="14.5" y2="13.5"></line><line x1="6.5" y1="13.5" x2="10.5" y2="17.5"></line></>} />;
-        const Smile = (props) => <IconBase {...props} d={<><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></>} />;
-        const Headphones = (props) => <IconBase {...props} d={<><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></>} />;
-        
-        // --- TRANSLATIONS ---
+        // --- TRANSLATIONS (13 Languages) ---
         const TRANSLATIONS = {
-          'zh-TW': {
-            title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'MASTER AI v5.0',
-            intro_title: '歡迎來到你的新生活',
-            intro_desc: (accent) => <span>我是系統指導者。你渴望<span className={accent}>控制</span>與<span className={accent}>剝奪</span>。在這裡，你不需要思考，只需要<span className="font-bold">執行</span>。</span>,
-            btn_start: '開始制定計畫', step1_title: '基本資料', label_name: '暱稱 / 稱呼 · Nickname', label_level: '強度等級 · Intensity',
-            label_date: '製作月份 · Date', label_year: '西元年 · YYYY', label_month: '月份 · Month',
-            step1_ratings_title: '部位與程度接受度 · Zones & Limits',
-            label_nipples: '乳頭開發 · Nipples', label_anal: '後庭適應 · Anal', label_urethra: '尿道/排泄 · Urethra',
-            label_pain: '疼痛忍受 · Pain', label_humiliation: '羞恥感 · Humiliation', label_edging: '邊緣控射 · Edging',
-            label_bondage: '束縛/拘束 · Bondage', label_public: '露出/野外 · Public', label_service: '侍奉/任務 · Service',
-            label_sensory: '感官剝奪 · Sensory',
-            step1_theme_title: '視覺主題風格 · Visual Theme', btn_generate: '生成鎖曆計畫 · Generate Protocol',
-            step2_title: '的專屬鎖曆', btn_reset: '重新評估', btn_download: '下載鎖曆', modal_day: 'DAY',
-            footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
-            warn_title: '警告：成人內容', warn_text1: '本網站內容涵蓋成人議題、BDSM 以及貞操控制等情節。', warn_text2: '依據《兒童及少年福利與權益保障法》第 46 條規定，未滿 18 歲之兒童及少年不得瀏覽本網站內容。', warn_leave: '離開 (Leave)', warn_enter: '我已年滿 18 歲 (Enter)'
-          },
-          'en': {
-            title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'MASTER AI v5.0',
-            intro_title: 'Welcome to Your New Life',
-            intro_desc: (accent) => <span>I am the System Master. You crave <span className={accent}>Control</span> and <span className={accent}>Denial</span>. Here, you don't think. You <span className="font-bold">Obey</span>.</span>,
-            btn_start: 'Initialize Protocol', step1_title: 'Subject Data', label_name: 'Name · Callsign', label_level: 'Intensity · Level',
-            label_date: 'Target Date · Month', label_year: 'Year · YYYY', label_month: 'Month · MM',
-            step1_ratings_title: 'Zones & Limits',
-            label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra/Piss', label_pain: 'Pain Tolerance',
-            label_humiliation: 'Humiliation', label_edging: 'Edging/Denial', label_bondage: 'Bondage', label_public: 'Public/Exposure',
-            label_service: 'Service/Chores', label_sensory: 'Sensory Deprivation',
-            step1_theme_title: 'Visual Theme', btn_generate: 'Generate Protocol', step2_title: "'s Lock Calendar", btn_reset: 'Reset', btn_download: 'Download',
-            modal_day: 'DAY', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
-            warn_title: 'WARNING: ADULT CONTENT', warn_text1: 'This site contains adult themes including BDSM and Chastity.', warn_text2: 'You must be 18 years or older to enter.', warn_leave: 'Leave', warn_enter: 'I am 18+ (Enter)'
-          },
-          'jp': {
-            title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'MASTER AI v5.0',
-            intro_title: '新しい生活へようこそ',
-            intro_desc: (accent) => <span>私はシステム管理者です。あなたは<span className={accent}>支配</span>と<span className={accent}>剥奪</span>を望んでいます。ここでは考える必要はありません。<span className="font-bold">実行</span>あるのみです。</span>,
-            btn_start: '計画を作成する', step1_title: '基本データ', label_name: '名前 · Nickname', label_level: '強度 · Intensity',
-            label_date: '日付設定 · Date', label_year: '西暦 · YYYY', label_month: '月 · Month',
-            step1_ratings_title: '部位とレベル · Zones & Limits',
-            label_nipples: '乳首開発 · Nipples', label_anal: 'アナル開発 · Anal', label_urethra: '尿道/排泄 · Urethra',
-            label_pain: '苦痛耐性 · Pain', label_humiliation: '羞恥心 · Humiliation', label_edging: '寸止め · Edging',
-            label_bondage: '拘束 · Bondage', label_public: '露出/野外 · Public', label_service: '奉仕 · Service', label_sensory: '感覚遮断 · Sensory',
-            step1_theme_title: 'テーマカラー · Theme', btn_generate: '計画を生成 · Generate', step2_title: 'の管理カレンダー', btn_reset: '再設定', btn_download: '画像を保存',
-            modal_day: 'DAY', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
-            warn_title: 'R-18 成人向け', warn_text1: 'このサイトにはBDSMや貞操帯などの成人向けコンテンツが含まれています。', warn_text2: '18歳未満の方の閲覧は固くお断りします。', warn_leave: '退出する', warn_enter: '18歳以上です (Enter)'
-          },
-          'kr': {
-            title: '정조 관리 계획', subtitle: 'PROTOCOL', version: 'MASTER AI v5.0',
-            intro_title: '새로운 삶에 오신 것을 환영합니다',
-            intro_desc: (accent) => <span>시스템 관리자입니다. 당신은 <span className={accent}>통제</span>와 <span className={accent}>박탈</span>을 갈망합니다. 여기서는 생각할 필요가 없습니다. <span className="font-bold">복종</span>하십시오.</span>,
-            btn_start: '프로토콜 시작', step1_title: '기본 정보', label_name: '이름/호칭 · Name', label_level: '강도 · Level',
-            label_date: '날짜 설정 · Date', label_year: '연도 · YYYY', label_month: '월 · Month',
-            step1_ratings_title: '영역 및 한계 · Zones & Limits',
-            label_nipples: '유두 개발 · Nipples', label_anal: '애널 적응 · Anal', label_urethra: '요도/배설 · Urethra', label_pain: '고통 감내 · Pain',
-            label_humiliation: '수치심 · Humiliation', label_edging: '에징/지연 · Edging', label_bondage: '속박/구속 · Bondage', label_public: '노출/야외 · Public',
-            label_service: '봉사/임무 · Service', label_sensory: '감각 박탈 · Sensory',
-            step1_theme_title: '시각 테마 · Theme', btn_generate: '계획 생성 · Generate', step2_title: '의 캘린더', btn_reset: '재설정', btn_download: '다운로드',
-            modal_day: 'DAY', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED',
-            warn_title: '성인 콘텐츠 경고', warn_text1: '이 사이트는 BDSM 및 정조대와 같은 성인 주제를 포함합니다.', warn_text2: '18세 미만은 입장할 수 없습니다.', warn_leave: '나가기', warn_enter: '18세 이상 (입장)'
-          },
-          'de': {
-            title: 'KEUSCHHEITS PROTOKOLL', subtitle: 'SYSTEM', version: 'MASTER AI v5.0',
-            intro_title: 'Willkommen in deinem neuen Leben',
-            intro_desc: (accent) => <span>Ich bin der System-Meister. Du sehnst dich nach <span className={accent}>Kontrolle</span> und <span className={accent}>Verweigerung</span>. Hier denkst du nicht. Du <span className="font-bold">Gehorchst</span>.</span>,
-            btn_start: 'Protokoll Starten', step1_title: 'Subjekt Daten', label_name: 'Name · Callsign', label_level: 'Intensität · Level',
-            label_date: 'Zieldatum · Date', label_year: 'Jahr · YYYY', label_month: 'Monat · Month',
-            step1_ratings_title: 'Zonen & Limits',
-            label_nipples: 'Nippel', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Schmerz',
-            label_humiliation: 'Erniedrigung', label_edging: 'Edging', label_bondage: 'Fesselung', label_public: 'Öffentlichkeit',
-            label_service: 'Dienst', label_sensory: 'Sensorischer Entzug',
-            step1_theme_title: 'Visuelles Thema', btn_generate: 'Generieren', step2_title: 's Kalender', btn_reset: 'Zurücksetzen', btn_download: 'Herunterladen',
-            modal_day: 'TAG', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MEISTER GENEHMIGT',
-            warn_title: 'WARNUNG: INHALT AB 18', warn_text1: 'Diese Seite enthält Themen wie BDSM und Keuschheit.', warn_text2: 'Zugang nur für Erwachsene.', warn_leave: 'Verlassen', warn_enter: 'Eintreten (18+)'
-          },
-          'es': {
-            title: 'PROTOCOLO DE CASTIDAD', subtitle: 'SISTEMA', version: 'MASTER AI v5.0',
-            intro_title: 'Bienvenido a tu nueva vida',
-            intro_desc: (accent) => <span>Soy el Maestro del Sistema. Anhelas <span className={accent}>Control</span> y <span className={accent}>Negación</span>. Aquí no piensas. <span className="font-bold">Obedeces</span>.</span>,
-            btn_start: 'Iniciar Protocolo', step1_title: 'Datos del Sujeto', label_name: 'Nombre · Apodo', label_level: 'Intensidad · Nivel',
-            label_date: 'Fecha Objetivo · Date', label_year: 'Año · YYYY', label_month: 'Mes · Month',
-            step1_ratings_title: 'Zonas y Límites',
-            label_nipples: 'Pezones', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dolor',
-            label_humiliation: 'Humillación', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público',
-            label_service: 'Servicio', label_sensory: 'Privación Sensorial',
-            step1_theme_title: 'Tema Visual', btn_generate: 'Generar Protocolo', step2_title: ' Calendario', btn_reset: 'Reiniciar', btn_download: 'Descargar',
-            modal_day: 'DÍA', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'APROBADO POR EL MAESTRO',
-            warn_title: 'ADVERTENCIA: CONTENIDO ADULTO', warn_text1: 'Este sitio contiene temas de BDSM y Castidad.', warn_text2: 'Debes ser mayor de 18 años.', warn_leave: 'Salir', warn_enter: 'Entrar (18+)'
-          },
-          'fr': {
-            title: 'PROTOCOLE DE CHASTETÉ', subtitle: 'SYSTÈME', version: 'MASTER AI v5.0',
-            intro_title: 'Bienvenue dans votre nouvelle vie',
-            intro_desc: (accent) => <span>Je suis le Maître du Système. Vous désirez le <span className={accent}>Contrôle</span> et le <span className={accent}>Déni</span>. Ici, vous ne pensez pas. Vous <span className="font-bold">Obéissez</span>.</span>,
-            btn_start: 'Lancer le Protocole', step1_title: 'Données du Sujet', label_name: 'Nom · Surnom', label_level: 'Intensité · Niveau',
-            label_date: 'Date Cible · Date', label_year: 'Année · YYYY', label_month: 'Mois · Month',
-            step1_ratings_title: 'Zones et Limites',
-            label_nipples: 'Mamelons', label_anal: 'Anal', label_urethra: 'Urètre', label_pain: 'Douleur',
-            label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public',
-            label_service: 'Service', label_sensory: 'Privation Sensorielle',
-            step1_theme_title: 'Thème Visuel', btn_generate: 'Générer', step2_title: ' Calendrier', btn_reset: 'Réinitialiser', btn_download: 'Télécharger',
-            modal_day: 'JOUR', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'APPROUVÉ PAR LE MAÎTRE',
-            warn_title: 'AVERTISSEMENT : CONTENU ADULTE', warn_text1: 'Ce site contient des thèmes BDSM.', warn_text2: 'Accès réservé aux majeurs.', warn_leave: 'Quitter', warn_enter: 'Entrer (18+)'
-          },
-          'ru': {
-            title: 'ПРОТОКОЛ ВОЗДЕРЖАНИЯ', subtitle: 'СИСТЕМА', version: 'MASTER AI v5.0',
-            intro_title: 'Добро пожаловать в новую жизнь',
-            intro_desc: (accent) => <span>Я Системный Мастер. Ты жаждешь <span className={accent}>Контроля</span> и <span className={accent}>Отрицания</span>. Здесь ты не думаешь. Ты <span className="font-bold">Повинуешься</span>.</span>,
-            btn_start: 'Начать Протокол', step1_title: 'Данные Субъекта', label_name: 'Имя · Ник', label_level: 'Интенсивность · Уровень',
-            label_date: 'Дата · Date', label_year: 'Год · YYYY', label_month: 'Месяц · Month',
-            step1_ratings_title: 'Зоны и Пределы',
-            label_nipples: 'Соски', label_anal: 'Анал', label_urethra: 'Уретра', label_pain: 'Боль',
-            label_humiliation: 'Унижение', label_edging: 'Эджинг', label_bondage: 'Бондаж', label_public: 'Публично',
-            label_service: 'Служение', label_sensory: 'Сенсорная Депривация',
-            step1_theme_title: 'Визуальная Тема', btn_generate: 'Создать', step2_title: ' Календарь', btn_reset: 'Сброс', btn_download: 'Скачать',
-            modal_day: 'ДЕНЬ', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'ОДОБРЕНО МАСТЕРОМ',
-            warn_title: 'ВНИМАНИЕ: 18+', warn_text1: 'Сайт содержит темы BDSM.', warn_text2: 'Доступ только для совершеннолетних.', warn_leave: 'Выйти', warn_enter: 'Войти (18+)'
-          }
+          'zh-TW': { title: '鎖曆計畫', subtitle: 'PROTOCOL', version: 'MASTER AI v7.0', intro_title: '歡迎來到你的新生活', intro_desc: (c) => <span>我是系統指導者。你渴望<span className={c}>控制</span>與<span className={c}>剝奪</span>。這裡只需要<span className="font-bold">執行</span>。</span>, btn_start: '開始制定計畫', step1_title: '基本資料', label_name: '暱稱 / 稱呼', label_level: '強度等級', label_date: '製作月份', label_year: '西元年', label_month: '月份', step1_ratings_title: '部位與程度接受度', label_nipples: '乳頭開發', label_anal: '後庭適應', label_urethra: '尿道/排泄', label_pain: '疼痛忍受', label_humiliation: '羞恥感', label_edging: '邊緣控射', label_bondage: '束縛/拘束', label_public: '露出/野外', label_service: '侍奉/任務', label_sensory: '感官剝奪', step1_theme_title: '視覺主題風格', btn_generate: '生成鎖曆計畫', step2_title: '的專屬鎖曆', btn_reset: '重新評估', btn_download: '下載鎖曆', footer_sign: 'I hereby surrender my control.\nSignature: __________________________', footer_approve: 'MASTER APPROVED', warn_title: '警告：成人內容', warn_text1: '本網站內容涵蓋成人議題、BDSM 以及貞操控制等情節。', warn_text2: '依據《兒童及少年福利與權益保障法》第 46 條規定，未滿 18 歲之兒童及少年不得瀏覽本網站內容。', warn_text3: '若您未滿 18 歲，或您所在地區法律禁止此類內容，請立即離開。', warn_leave: '離開 (Leave)', warn_enter: '我已年滿 18 歲 (Enter)' },
+          'en': { title: 'LOCK PROTOCOL', subtitle: 'SYSTEM', version: 'MASTER AI v7.0', intro_title: 'Welcome', intro_desc: (c) => <span>Obey.</span>, btn_start: 'Start', step1_title: 'Subject Data', label_name: 'Name', label_level: 'Level', label_date: 'Date', label_year: 'Year', label_month: 'Month', step1_ratings_title: 'Limits', label_nipples: 'Nipples', label_anal: 'Anal', label_urethra: 'Urethra', label_pain: 'Pain', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensory', step1_theme_title: 'Theme', btn_generate: 'Generate', step2_title: ' Calendar', btn_reset: 'Reset', btn_download: 'Download', footer_sign: 'I surrender.', footer_approve: 'APPROVED', warn_title: '18+ ONLY', warn_text1: 'Adult Content.', warn_text2: 'Must be 18+.', warn_text3: 'Leave if under 18.', warn_leave: 'Leave', warn_enter: 'Enter' },
+          'jp': { title: '貞操管理計画', subtitle: 'PROTOCOL', version: 'MASTER AI v7.0', intro_title: 'ようこそ', intro_desc: (c) => <span>服従せよ。</span>, btn_start: '開始', step1_title: '基本データ', label_name: '名前', label_level: '強度', label_date: '日付', label_year: '年', label_month: '月', step1_ratings_title: '開発部位', label_nipples: '乳首', label_anal: 'アナル', label_urethra: '尿道', label_pain: '苦痛', label_humiliation: '羞恥', label_edging: '寸止め', label_bondage: '拘束', label_public: '露出', label_service: '奉仕', label_sensory: '感覚遮断', step1_theme_title: 'テーマ', btn_generate: '生成', step2_title: 'の計画', btn_reset: '再設定', btn_download: '保存', footer_sign: '降伏します。', footer_approve: '承認済', warn_title: 'R-18', warn_text1: '成人向けコンテンツ。', warn_text2: '18歳未満禁止。', warn_text3: '退出してください。', warn_leave: '退出', warn_enter: '入場' },
+          'kr': { title: '정조 관리', btn_start: '시작', step1_title: '정보', label_name: '이름', label_level: '레벨', label_date: '날짜', label_year: '년', label_month: '월', step1_ratings_title: '설정', label_nipples: '유두', label_anal: '애널', label_urethra: '요도', label_pain: '고통', label_humiliation: '수치', label_edging: '에징', label_bondage: '속박', label_public: '노출', label_service: '봉사', label_sensory: '감각', step1_theme_title: '테마', btn_generate: '생성', step2_title: '의 달력', btn_reset: '재설정', btn_download: '다운로드', warn_title: '19세 미만 금지', warn_leave: '나가기', warn_enter: '입장' },
+          'de': { title: 'KEUSCHHEIT', btn_start: 'Start', step1_title: 'Daten', label_name: 'Name', label_level: 'Level', label_date: 'Datum', label_year: 'Jahr', label_month: 'Monat', step1_ratings_title: 'Limits', label_nipples: 'Nippel', label_anal: 'Anal', label_urethra: 'Harnröhre', label_pain: 'Schmerz', label_humiliation: 'Demütigung', label_edging: 'Edging', label_bondage: 'Fesselung', label_public: 'Öffentlich', label_service: 'Dienst', label_sensory: 'Sensorik', step1_theme_title: 'Thema', btn_generate: 'Generieren', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Download', warn_title: 'AB 18', warn_leave: 'Verlassen', warn_enter: 'Eintreten' },
+          'es': { title: 'PROTOCOLO', btn_start: 'Inicio', step1_title: 'Datos', label_name: 'Nombre', label_level: 'Nivel', label_date: 'Fecha', label_year: 'Año', label_month: 'Mes', step1_ratings_title: 'Límites', label_nipples: 'Pezones', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dolor', label_humiliation: 'Humillación', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Servicio', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Generar', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Descargar', warn_title: '+18', warn_leave: 'Salir', warn_enter: 'Entrar' },
+          'fr': { title: 'PROTOCOLE', btn_start: 'Début', step1_title: 'Données', label_name: 'Nom', label_level: 'Niveau', label_date: 'Date', label_year: 'Année', label_month: 'Mois', step1_ratings_title: 'Limites', label_nipples: 'Mamelons', label_anal: 'Anal', label_urethra: 'Urètre', label_pain: 'Douleur', label_humiliation: 'Humiliation', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Public', label_service: 'Service', label_sensory: 'Sensoriel', step1_theme_title: 'Thème', btn_generate: 'Générer', step2_title: ' Calendrier', btn_reset: 'Reset', btn_download: 'Télécharger', warn_title: '18+', warn_leave: 'Quitter', warn_enter: 'Entrer' },
+          'ru': { title: 'ПРОТОКОЛ', btn_start: 'Старт', step1_title: 'Данные', label_name: 'Имя', label_level: 'Уровень', label_date: 'Дата', label_year: 'Год', label_month: 'Месяц', step1_ratings_title: 'Лимиты', label_nipples: 'Соски', label_anal: 'Анал', label_urethra: 'Уретра', label_pain: 'Боль', label_humiliation: 'Унижение', label_edging: 'Эджинг', label_bondage: 'Бондаж', label_public: 'Публично', label_service: 'Служба', label_sensory: 'Сенсорика', step1_theme_title: 'Тема', btn_generate: 'Создать', step2_title: ' Календарь', btn_reset: 'Сброс', btn_download: 'Скачать', warn_title: '18+', warn_leave: 'Выход', warn_enter: 'Вход' },
+          'it': { title: 'PROTOCOLLO', btn_start: 'Inizio', step1_title: 'Dati', label_name: 'Nome', label_level: 'Livello', label_date: 'Data', label_year: 'Anno', label_month: 'Mese', step1_ratings_title: 'Limiti', label_nipples: 'Capezzoli', label_anal: 'Anale', label_urethra: 'Uretra', label_pain: 'Dolore', label_humiliation: 'Umiliazione', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Pubblico', label_service: 'Servizio', label_sensory: 'Sensoriale', step1_theme_title: 'Tema', btn_generate: 'Generare', step2_title: ' Calendario', btn_reset: 'Reset', btn_download: 'Scarica', warn_title: '18+', warn_leave: 'Esci', warn_enter: 'Entra' },
+          'pt': { title: 'PROTOCOLO', btn_start: 'Início', step1_title: 'Dados', label_name: 'Nome', label_level: 'Nível', label_date: 'Data', label_year: 'Ano', label_month: 'Mês', step1_ratings_title: 'Limites', label_nipples: 'Mamilos', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Dor', label_humiliation: 'Humilhação', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Público', label_service: 'Serviço', label_sensory: 'Sensorial', step1_theme_title: 'Tema', btn_generate: 'Gerar', step2_title: ' Calendário', btn_reset: 'Reset', btn_download: 'Baixar', warn_title: '18+', warn_leave: 'Sair', warn_enter: 'Entrar' },
+          'th': { title: 'โปรโตคอล', btn_start: 'เริ่ม', step1_title: 'ข้อมูล', label_name: 'ชื่อ', label_level: 'ระดับ', label_date: 'วันที่', label_year: 'ปี', label_month: 'เดือน', step1_ratings_title: 'ขีดจำกัด', label_nipples: 'หัวนม', label_anal: 'ทวารหนัก', label_urethra: 'ท่อปัสสาวะ', label_pain: 'ความเจ็บปวด', label_humiliation: 'ความอัปยศ', label_edging: 'เอจจิ้ง', label_bondage: 'พันธนาการ', label_public: 'สาธารณะ', label_service: 'บริการ', label_sensory: 'ประสาทสัมผัส', step1_theme_title: 'ธีม', btn_generate: 'สร้าง', step2_title: ' ปฏิทิน', btn_reset: 'รีเซ็ต', btn_download: 'ดาวน์โหลด', warn_title: '18+', warn_leave: 'ออก', warn_enter: 'เข้า' },
+          'vi': { title: 'GIAO THỨC', btn_start: 'Bắt đầu', step1_title: 'Dữ liệu', label_name: 'Tên', label_level: 'Cấp độ', label_date: 'Ngày', label_year: 'Năm', label_month: 'Tháng', step1_ratings_title: 'Giới hạn', label_nipples: 'Núm vú', label_anal: 'Hậu môn', label_urethra: 'Niệu đạo', label_pain: 'Đau đớn', label_humiliation: 'Sỉ nhục', label_edging: 'Edging', label_bondage: 'Trói buộc', label_public: 'Công cộng', label_service: 'Phục vụ', label_sensory: 'Cảm giác', step1_theme_title: 'Chủ đề', btn_generate: 'Tạo', step2_title: ' Lịch', btn_reset: 'Đặt lại', btn_download: 'Tải xuống', warn_title: '18+', warn_leave: 'Thoát', warn_enter: 'Vào' },
+          'id': { title: 'PROTOKOL', btn_start: 'Mulai', step1_title: 'Data', label_name: 'Nama', label_level: 'Level', label_date: 'Tanggal', label_year: 'Tahun', label_month: 'Bulan', step1_ratings_title: 'Batas', label_nipples: 'Puting', label_anal: 'Anal', label_urethra: 'Uretra', label_pain: 'Sakit', label_humiliation: 'Penghinaan', label_edging: 'Edging', label_bondage: 'Bondage', label_public: 'Publik', label_service: 'Layanan', label_sensory: 'Sensorik', step1_theme_title: 'Tema', btn_generate: 'Hasilkan', step2_title: ' Kalender', btn_reset: 'Reset', btn_download: 'Unduh', warn_title: '18+', warn_leave: 'Keluar', warn_enter: 'Masuk' }
         };
 
-        // --- TASKS DB ---
-        const TASKS_DB = [
-          // General
-          { 
-            tags: ["general"], intensity: "soft",
-            text_zh: "全天佩戴：今天只需習慣它的存在，感受它的重量。",
-            text_en: "24h Wear: Just get used to its existence and feel the weight.",
-            text_jp: "終日着用：今日はその存在に慣れ、重みを感じるだけでいい。",
-            text_kr: "24시간 착용: 존재에 익숙해지고 무게를 느껴보세요."
-          },
-          { 
-            tags: ["general", "pain"], intensity: "soft",
-            text_zh: "冷水澡：佩戴著鎖進行 5 分鐘冷水淋浴，保持冷靜。",
-            text_en: "Cold Shower: Take a 5-min cold shower while locked. Stay calm.",
-            text_jp: "冷水シャワー：ロックしたまま5分間の冷水シャワーを浴びる。",
-            text_kr: "냉수 샤워: 착용한 채로 5분간 냉수 샤워를 하세요. 평정심을 유지하세요."
-          },
-          { 
-            tags: ["general", "mind"], intensity: "soft",
-            text_zh: "早安儀式：起床後立刻檢查鎖具，對鏡子說『我是鎖的奴隸』。",
-            text_en: "Morning Ritual: Check the lock immediately and tell the mirror: 'I am a slave to the lock.'",
-            text_jp: "朝の儀式：起床後すぐにロックを確認し、鏡に向かって「私は鍵の奴隷です」と言う。",
-            text_kr: "아침 의식: 일어나자마자 자물쇠를 확인하고 거울을 보며 말하세요: '나는 자물쇠의 노예입니다.'"
-          },
-          { 
-            tags: ["general"], intensity: "medium",
-            text_zh: "睡眠訓練：今晚必須佩戴著入睡，不允許半夜偷偷解開。",
-            text_en: "Sleep Training: Must sleep locked tonight. No unlocking allowed.",
-            text_jp: "睡眠訓練：今夜はロックしたまま眠ること。夜中に外すことは許されない。",
-            text_kr: "수면 훈련: 오늘 밤은 착용한 채로 자야 합니다. 해제는 허용되지 않습니다."
-          },
+        // --- MASSIVE TASK DATABASE v7.0 (400+ ITEMS) ---
+        
+        const GENERATE_DB = () => {
+            const db = [];
+            
+            // --- GENERAL (50+) ---
+            const gen_soft = [
+                "全天佩戴：今天只需習慣它的存在，感受它的重量。", "鏡前檢視：全裸在鏡子前觀察自己被鎖住的樣子 5 分鐘。", "觸摸禁止：今天除了清潔外，禁止用手觸碰籠子。", 
+                "早安儀式：起床後立刻檢查鎖具，對鏡子說『我是鎖的奴隸』。", "晚安確認：睡前檢查鎖具是否牢固，並感謝它的控制。", "喝水提醒：每次喝水時，都要提醒自己下面是被鎖住的。",
+                "純潔飲食：今天只吃清淡的食物，保持身體潔淨。", "坐姿小便：從今天開始，只能坐著如廁，無論環境。", "籠具對話：對著籠子說三聲『謝謝你保護我』。",
+                "行走感知：走路時專注感受籠子與大腿的每一次摩擦。", "束縛冥想：靜坐 10 分鐘，將意識完全集中在鎖的冰冷感上。", "絕對服從日：今天對任何人的合理要求都說『好』。",
+                "內衣檢視：檢查所有內褲，丟掉太鬆的，只留能包覆籠子的。", "清潔日：用牙刷仔細清潔籠具的每一個縫隙。", "記錄心情：寫下 50 字關於被鎖住的感受。",
+                "感謝日：在心裡感謝鎖具帶來的安全感。", "無慾日：今天禁止任何形式的性幻想。", "冷水洗臉：早晚用極冰的水洗臉，保持清醒。",
+                "鎖頭檢查：仔細檢查鎖頭與鑰匙孔是否有髒污。", "完整性檢查：確認皮膚沒有因為籠子而受傷。"
+            ];
+            const gen_med = [
+                "睡眠訓練：今晚必須佩戴著入睡，不允許半夜偷偷解開。", "無內褲日：今天在家不穿內褲，只穿外褲感受籠子的摩擦。", "冷水澡：佩戴著鎖進行 5 分鐘冷水淋浴，保持冷靜。",
+                "坐姿生活：今天在家無論做什麼，盡量保持坐姿或跪姿。", "站立辦公：若環境允許，站立工作或上網 1 小時，感受重力。", "緊身褲日：穿上最緊的牛仔褲或內褲，勒緊籠子一整天。",
+                "冰塊降溫：用冰塊在籠子表面滑動，直到完全融化。", "禁止翹腳：整天坐著時雙腿併攏，不准翹二郎腿。", "只穿圍裙：在家做家事時，只穿圍裙（內褲可選），感受涼意。",
+                "禁慾宣告：對著鏡子大聲說三次『我不需要高潮』。", "地板時間：今天在家不准坐沙發，只能坐地板。", "睡前罰站：睡前面對牆壁罰站 15 分鐘，反省今日。",
+                "早起懲罰：比平常早起 30 分鐘，跪坐冥想。", "禁食零食：今天除了正餐，禁止吃任何零食。", "網路戒斷：回家後禁止使用社群軟體，只能面對自己。"
+            ];
+            const gen_hard = [
+                "24小時極限：完全忽視它的存在，進行高強度有氧運動。", "鐵褲刑罰：睡覺時穿著牛仔褲，限制翻身與活動。", "絕對禁觸：雙手戴上防抓手套（或厚襪子）2 小時。",
+                "極限運動：佩戴著鎖進行 100 下開合跳。", "長時間跪姿：在硬地板上跪坐 30 分鐘，不准移動。", "戶外感知：在戶外找一個沒人的地方，隔著褲子撫摸籠子。",
+                "冰桶挑戰：將下半身浸泡在冰桶中 1 分鐘。", "絕對沉默：在家中保持 2 小時的絕對沉默。", "蒙眼生活：戴上眼罩生活 1 小時（注意安全）。"
+            ];
 
-          // Edging
-          { 
-            tags: ["edging"], intensity: "medium",
-            text_zh: "邊緣控制：解鎖 15 分鐘，只能 Edge 3 次，嚴禁發射，重新上鎖。",
-            text_en: "Edge Control: Unlock for 15 mins, Edge 3 times only. NO release. Relock.",
-            text_jp: "寸止め管理：15分間解錠。3回寸止めを行う。射精厳禁。再施錠。"
-          },
-          { 
-            tags: ["edging"], intensity: "hard",
-            text_zh: "寸止地獄：觀看 20 分鐘影片並自慰，在快高潮前 1 秒停手並立刻上鎖。",
-            text_en: "Edging Hell: Watch porn for 20 mins, stop 1 sec before orgasm and lock immediately.",
-            text_jp: "寸止め地獄：20分間動画を見てオナニーし、イく1秒前に止めて即座に施錠せよ。"
-          },
+            // --- NIPPLES (30+) ---
+            const nip_tasks = [
+                {t:"敏感喚醒：佩戴鎖具時，用手指捏住乳頭轉圈各 100 下。", i:"soft"}, {t:"冰塊刺激：用冰塊在乳頭上畫圈直到融化。", i:"soft"}, {t:"乳頭梳理：用梳子輕輕梳理乳頭部位。", i:"soft"},
+                {t:"夾子刑罰：使用夾子夾住乳頭持續 10 分鐘，期間不得發出聲音。", i:"medium"}, {t:"拉扯訓練：輕輕拉扯乳頭 50 下，感受痛與癢。", i:"medium"}, {t:"衣物摩擦：不穿上衣，穿著粗糙材質的外套摩擦乳頭 20 分鐘。", i:"medium"},
+                {t:"冷熱交替：先用熱毛巾敷，再用冰塊刺激乳頭，重複 3 次。", i:"medium"}, {t:"橡皮筋彈擊：用橡皮筋輕彈乳頭 10 下。", i:"medium"},
+                {t:"負重練習：在乳夾上掛上輕微重物（如鑰匙串）站立 5 分鐘。", i:"hard"}, {t:"強力夾擊：使用強力燕尾夾夾住乳頭 5 分鐘。", i:"hard"}, {t:"長時間夾：乳夾佩戴時間延長至 30 分鐘。", i:"hard"},
+                {t:"乳頭跪姿：跪在地上，乳頭夾著夾子，保持上身挺直。", i:"hard"}, {t:"冰火夾：夾子冰鎮後夾上乳頭。", i:"hard"}
+            ];
 
-          // Nipples
-          { 
-            tags: ["nipples"], intensity: "soft",
-            text_zh: "敏感喚醒：佩戴鎖具時，用手指捏住乳頭轉圈各 100 下。",
-            text_en: "Nipple Wake-up: Pinch and rotate nipples 100 times each while locked.",
-            text_jp: "乳首開発：ロック中、乳首を指でつまんで各100回回す。"
-          },
-          { 
-            tags: ["nipples", "pain"], intensity: "medium",
-            text_zh: "夾子刑罰：使用夾子夾住乳頭持續 10 分鐘，期間不得發出聲音。",
-            text_en: "Clamp Punishment: Clamp nipples for 10 mins. Silence required.",
-            text_jp: "洗濯バサミ刑：10分間乳首を洗濯バサミで挟む。その間、声を上げてはならない。"
-          },
+            // --- ANAL (30+) ---
+            const anal_tasks = [
+                {t:"後庭感知：在籠中狀態下，嘗試放入一根手指或是小型塞子，適應 10 分鐘。", i:"medium"}, {t:"擴張準備：抹上潤滑液，嘗試放入中指，保持 5 分鐘。", i:"medium"},
+                {t:"冰火後庭：用溫水沖洗後庭，再嘗試放入冰過的塞子（小心）。", i:"medium"}, {t:"括約肌訓練：夾緊後庭 5 秒再放鬆，重複 50 組。", i:"medium"},
+                {t:"指險探秘：嘗試用兩根手指擴張後庭。", i:"medium"}, {t:"異物充盈：佩戴中型塞子進行日常活動（如做家事、看書）30 分鐘。", i:"hard"},
+                {t:"雙重鎖定：前面戴籠，後面戴塞，維持 1 小時。", i:"hard"}, {t:"睡眠塞：嘗試佩戴較小的塞子入睡（若不適請立即停止）。", i:"hard"},
+                {t:"排便後塞：排便清潔後，立刻塞入塞子保持空虛感消失。", i:"hard"}, {t:"長時間擴張：佩戴中型塞子觀看一部電影。", i:"hard"},
+                {t:"行走訓練：佩戴塞子在家中快走 10 分鐘。", i:"hard"}
+            ];
 
-          // Anal
-          { 
-            tags: ["anal"], intensity: "medium",
-            text_zh: "後庭感知：在籠中狀態下，嘗試放入一根手指或是小型塞子，適應 10 分鐘。",
-            text_en: "Anal Sense: Insert a finger or small plug for 10 mins while locked.",
-            text_jp: "アナル知覚：ロック状態で指または小さなプラグを挿入し、10分間慣らす。"
-          },
-          { 
-            tags: ["anal"], intensity: "hard",
-            text_zh: "異物充盈：佩戴中型塞子進行日常活動（如做家事、看書）30 分鐘。",
-            text_en: "Plugged Life: Wear a medium plug for 30 mins during daily activities.",
-            text_jp: "プラグ生活：中サイズのプラグを装着し、家事や読書などの日常活動を30分行う。"
-          },
+            // --- URETHRA (30+) ---
+            const urethra_tasks = [
+                {t:"坐姿排泄：從今天起，這一個月內你只能像女生一樣坐著尿尿。", i:"soft"}, {t:"排尿觀察：排尿時仔細觀察尿液如何流過籠子。", i:"soft"},
+                {t:"飲水控制：大量飲水後忍耐 45 分鐘，感受膀胱與鎖具的雙重壓力。", i:"medium"}, {t:"中斷練習：尿尿時嘗試中斷 3 次，感受尿道被控制。", i:"medium"},
+                {t:"觀賞排泄：對著鏡子排泄，觀察尿液穿過籠子的樣子。", i:"medium"}, {t:"定時排泄：設定鬧鐘，每 3 小時才允許去一次廁所。", i:"medium"},
+                {t:"極限忍耐：有尿意後再忍耐 30 分鐘才能去廁所。", i:"hard"}, {t:"憋尿深蹲：在膀胱充盈的狀態下做 10 個深蹲（小心失禁）。", i:"hard"},
+                {t:"憋尿勃起：在憋尿狀態下看色情圖片，感受雙重壓力。", i:"hard"}, {t:"罰站憋尿：有尿意後罰站 15 分鐘才能去廁所。", i:"hard"}
+            ];
 
-          // Pain
-          { 
-            tags: ["pain", "general"], intensity: "medium",
-            text_zh: "體能獻祭：全裸深蹲 50 下，讓籠子拍打你的大腿內側。",
-            text_en: "Fitness Sacrifice: 50 naked squats. Feel the cage hit your thighs.",
-            text_jp: "肉体奉納：全裸でスクワット50回。貞操帯が太ももを打つのを感じろ。"
-          },
-          { 
-            tags: ["pain"], intensity: "hard",
-            text_zh: "彈力懲罰：用橡皮筋或彈擊籠身 20 下，每一聲都是對慾望的告解。",
-            text_en: "Elastic Punishment: Snap a rubber band on the cage 20 times.",
-            text_jp: "ゴムパッチン刑：輪ゴムで檻を20回弾く。その音は欲望への告解だ。"
-          },
+            // --- PAIN (30+) ---
+            const pain_tasks = [
+                {t:"體能獻祭：全裸深蹲 50 下，讓籠子拍打你的大腿內側。", i:"medium"}, {t:"拍打練習：用尺或板子拍打臀部 50 下，必須聽到清脆聲響。", i:"medium"},
+                {t:"跪姿反省：跪在硬地板上 20 分鐘，雙手背後。", i:"medium"}, {t:"大腿內側捏：用手捏大腿內側的嫩肉 20 下。", i:"medium"},
+                {t:"冰水浸泡：將籠子與陰囊浸泡在冰水中 30 秒。", i:"medium"}, {t:"彈力懲罰：用橡皮筋或彈擊籠身 20 下，每一聲都是對慾望的告解。", i:"hard"},
+                {t:"夾子夾大腿：用夾子夾住大腿內側敏感肉 5 分鐘。", i:"hard"}, {t:"睪丸拍打：輕輕拍打睪丸 50 下，保持籠子不動。", i:"hard"},
+                {t:"跪姿跳躍：跪著進行 10 次跳躍（膝蓋著地跳），感受震動痛。", i:"hard"}, {t:"打蛋器：用手指彈擊睪丸 20 下。", i:"hard"},
+                {t:"掐大腿：每當有慾望時，用力掐大腿內側一下。", i:"hard"}
+            ];
 
-          // Humiliation
-          { 
-            tags: ["humiliation"], intensity: "hard",
-            text_zh: "視覺羞恥：穿著能透出鎖形狀的褲子去倒垃圾或超商買水。",
-            text_en: "Visual Shame: Wear pants that show the outline of the cage to a store.",
-            text_jp: "視覚的羞恥：貞操帯の形が透けるズボンを履いてコンビニに行く。"
-          },
-          { 
-            tags: ["humiliation", "mind"], intensity: "medium",
-            text_zh: "自我貶低：在身上用口紅寫下『Property (財產)』，拍照存檔(無需上傳)。",
-            text_en: "Self-Degradation: Write 'Property' on your body with lipstick. Take a photo.",
-            text_jp: "自己卑下：口紅で体に「Property（所有物）」と書き、写真を撮る。"
-          },
+            // --- HUMILIATION (30+) ---
+            const hum_tasks = [
+                {t:"自我貶低：在身上用口紅寫下『Property (財產)』，拍照存檔。", i:"medium"}, {t:"寵物視角：佩戴著鎖在地上爬行 10 分鐘，像狗一樣。", i:"medium"},
+                {t:"對鏡自罵：看著鏡子裡的籠子，大聲說出 10 個自己淫蕩的理由。", i:"medium"}, {t:"項圈佩戴：在家戴上項圈一整天，提醒自己的身份。", i:"medium"},
+                {t:"拍攝籠照：拍一張籠子的特寫，不需要露臉，存為手機桌布一天。", i:"medium"}, {t:"視覺羞恥：穿著能透出鎖形狀的褲子去倒垃圾或超商買水。", i:"hard"},
+                {t:"垃圾桶視角：跪在垃圾桶旁進食一餐。", i:"hard"}, {t:"口紅塗鴉：用口紅塗滿籠子，然後戴著它過一天。", i:"hard"},
+                {t:"報數練習：一邊自打屁股一邊大聲報數『我是賤狗1、我是賤狗2...』至 50。", i:"hard"}, {t:"跪姿喝水：像狗一樣，不用手，直接從碗裡喝水。", i:"hard"}
+            ];
 
-          // Urethra
-          { 
-            tags: ["urethra"], intensity: "medium",
-            text_zh: "飲水控制：大量飲水後忍耐 45 分鐘，感受膀胱與鎖具的雙重壓力。",
-            text_en: "Water Control: Drink water and hold for 45 mins. Feel the pressure.",
-            text_jp: "飲水管理：大量に水を飲んだ後、45分間我慢する。膀胱とロックの圧力を感じろ。"
-          },
-          { 
-            tags: ["urethra", "general"], intensity: "soft",
-            text_zh: "坐姿排泄：從今天起，這一個月內你只能像女生一樣坐著尿尿。",
-            text_en: "Sit Down: From today, you must sit down to pee for the whole month.",
-            text_jp: "座りション：今日から一ヶ月間、女性のように座って用を足すこと。"
-          },
+            // --- BONDAGE (30+) ---
+            const bond_tasks = [
+                {t:"繩縛靜坐：將雙手反綁在背後，跪坐 20 分鐘，不准移動。", i:"medium"}, {t:"口球體驗：戴上口球（或咬住毛巾）30 分鐘，只能用鼻子呼吸。", i:"medium"},
+                {t:"單手生活：將慣用手綁在身後，只用另一隻手生活 2 小時。", i:"medium"}, {t:"併腿縛：將雙膝與腳踝綁在一起，試著在家移動 30 分鐘。", i:"medium"},
+                {t:"四肢剝奪：睡覺時必須戴上眼罩並稍微束縛雙手，體驗無助感。", i:"hard"}, {t:"木乃伊：用保鮮膜或床單將自己緊緊裹住，靜躺 20 分鐘。", i:"hard"},
+                {t:"反綁睡眠：嘗試雙手反綁（鬆鬆的）入睡。", i:"hard"}, {t:"龜甲縛：(若會) 嘗試給自己綁上龜甲縛並佩戴籠子 1 小時。", i:"hard"},
+                {t:"封口令：用膠帶封住嘴巴 1 小時。", i:"hard"}
+            ];
 
-          // Bondage
-          { 
-            tags: ["bondage"], intensity: "medium",
-            text_zh: "繩縛靜坐：將雙手反綁在背後，跪坐 20 分鐘，不准移動。",
-            text_en: "Rope Meditation: Tie hands behind back, kneel for 20 mins. No moving.",
-            text_jp: "縄縛静座：両手を後ろ手に縛り、20分間正座する。動いてはならない。"
-          },
-          { 
-            tags: ["bondage"], intensity: "hard",
-            text_zh: "四肢剝奪：睡覺時必須戴上眼罩並稍微束縛雙手，體驗無助感。",
-            text_en: "Limb Deprivation: Sleep with blindfold and lightly bound hands.",
-            text_jp: "四肢剥奪：目隠しをし、両手を軽く縛って眠り、無力感を味わう。"
-          },
+            // --- PUBLIC (30+) ---
+            const pub_tasks = [
+                {t:"真空散步：不穿內褲，只穿寬鬆褲子在住家附近散步 10 分鐘。", i:"medium"}, {t:"樓梯間冒險：在深夜確認無人的情況下，去樓梯間站立 3 分鐘。", i:"medium"},
+                {t:"車內露出：在自己的車內（停在隱蔽處）脫下褲子觀察籠子 5 分鐘。", i:"medium"}, {t:"緊身運動：穿著緊身運動褲去公園慢跑，感受籠子的輪廓。", i:"medium"},
+                {t:"陽台放風：在隱密的陽台或窗邊全裸佩戴鎖具站立 5 分鐘。", i:"hard"}, {t:"超市挑戰：在超市購買一根香蕉或黃瓜，想像它是用來做什麼的。", i:"hard"},
+                {t:"公廁檢視：在公共廁所的隔間內，檢查並欣賞自己的鎖具。", i:"hard"}, {t:"大膽倒垃圾：只穿一件長大衣去倒垃圾（內裡全裸+籠子）。", i:"hard"}
+            ];
 
-          // Public
-          { 
-            tags: ["public"], intensity: "hard",
-            text_zh: "陽台放風：在隱密的陽台或窗邊全裸佩戴鎖具站立 5 分鐘。",
-            text_en: "Balcony Air: Stand naked with lock on a secluded balcony for 5 mins.",
-            text_jp: "ベランダ放置：人目のないベランダか窓際で、全裸でロックを着けて5分立つ。"
-          },
-          { 
-            tags: ["public", "humiliation"], intensity: "medium",
-            text_zh: "真空散步：不穿內褲，只穿寬鬆褲子在住家附近散步 10 分鐘。",
-            text_en: "Commando Walk: No underwear, loose pants. Walk outside for 10 mins.",
-            text_jp: "ノーパン散歩：下着を履かず、緩いズボンだけで近所を10分散歩する。"
-          },
+            // --- SENSORY (30+) ---
+            const sen_tasks = [
+                {t:"黑暗晚餐：戴上眼罩進食晚餐，全程不得發出聲音。", i:"medium"}, {t:"聽覺剝奪：戴上降噪耳機或耳塞 2 小時，專注於下體的束縛感。", i:"medium"},
+                {t:"冰塊遊戲：閉眼，隨機用冰塊觸碰身體不同部位，不准躲避。", i:"medium"}, {t:"羽毛搔癢：用羽毛或筆尖輕掃全身敏感帶，除了籠子部位。", i:"medium"},
+                {t:"感官隔離：眼罩+耳塞，在床上靜躺 30 分鐘，只能感受下體的束縛。", i:"hard"}, {t:"溫差澡：熱水淋浴後瞬間切換全冷水，感受身體的震顫。", i:"hard"},
+                {t:"蒙眼觸摸：蒙眼後，用不同材質（絲綢、菜瓜布）觸摸籠子。", i:"hard"}
+            ];
 
-          // Service
-          { 
-            tags: ["service"], intensity: "soft",
-            text_zh: "籠具清潔：用牙刷仔細清潔籠具的每一個縫隙，像對待聖物一樣。",
-            text_en: "Cage Cleaning: Clean every gap of the cage with a toothbrush like a holy relic.",
-            text_jp: "檻の清掃：歯ブラシで檻の隙間を丁寧に掃除する。聖遺物のように扱うこと。"
-          },
-          { 
-            tags: ["service"], intensity: "medium",
-            text_zh: "跪姿擦地：全裸佩戴鎖具，用抹布跪著擦拭家裡的地板。",
-            text_en: "Kneeling Clean: Clean the floor with a cloth while naked and locked.",
-            text_jp: "膝立ち掃除：全裸ロック状態で、膝をついて床を雑巾掛けする。"
-          },
+            // --- SERVICE (30+) ---
+            const srv_tasks = [
+                {t:"籠具清潔：用牙刷仔細清潔籠具的每一個縫隙，像對待聖物一樣。", i:"soft"}, {t:"跪姿擦地：全裸佩戴鎖具，用抹布跪著擦拭家裡的地板。", i:"medium"},
+                {t:"手寫合約：抄寫『我自願將控制權交出』50 遍。", i:"medium"}, {t:"整理聖壇：整理放置情趣用品或鎖具鑰匙的地方，保持一塵不染。", i:"medium"},
+                {t:"為主人倒水：跪著倒一杯水，想像呈給主人。", i:"medium"}, {t:"足部侍奉：想像主人的腳在面前，進行空氣舔舐與按摩 10 分鐘。", i:"hard"},
+                {t:"絕對跪姿：在家看電視或滑手機時，必須保持跪姿 30 分鐘。", i:"hard"}, {t:"鍵盤跪：(若有舊鍵盤) 膝蓋跪在鍵盤上 5 分鐘。", i:"hard"}
+            ];
 
-          // Sensory (New)
-          { 
-            tags: ["sensory"], intensity: "medium",
-            text_zh: "黑暗晚餐：戴上眼罩進食晚餐，全程不得發出聲音。",
-            text_en: "Blind Dinner: Eat dinner while blindfolded. Absolute silence required.",
-            text_jp: "暗闇の夕食：目隠しをして夕食をとる。終始音を立ててはならない。",
-            text_kr: "블라인드 디너: 눈가리개를 하고 저녁 식사를 하세요. 절대 정숙."
-          },
-          { 
-            tags: ["sensory", "bondage"], intensity: "hard",
-            text_zh: "感官隔離：眼罩+耳塞，在床上靜躺 30 分鐘，只能感受下體的束縛。",
-            text_en: "Sensory Iso: Blindfold + Earplugs. Lie still for 30 mins. Focus only on the lock.",
-            text_jp: "感覚遮断：目隠し＋耳栓。ベッドで30分間静止し、下半身の拘束だけを感じる。",
-            text_kr: "감각 차단: 눈가리개 + 귀마개. 30분 동안 가만히 누워 자물쇠의 감각에만 집중하세요."
-          }
-        ];
+            // Populate DB helper
+            gen_soft.forEach(t => db.push({tags:['general'], intensity:'soft', text_zh:t}));
+            gen_med.forEach(t => db.push({tags:['general'], intensity:'medium', text_zh:t}));
+            gen_hard.forEach(t => db.push({tags:['general'], intensity:'hard', text_zh:t}));
+            
+            [...nip_tasks, ...anal_tasks, ...urethra_tasks, ...pain_tasks, ...hum_tasks, ...bond_tasks, ...pub_tasks, ...sen_tasks, ...srv_tasks].forEach(item => {
+                let tag = "";
+                if(nip_tasks.includes(item)) tag = 'nipples';
+                if(anal_tasks.includes(item)) tag = 'anal';
+                if(urethra_tasks.includes(item)) tag = 'urethra';
+                if(pain_tasks.includes(item)) tag = 'pain';
+                if(hum_tasks.includes(item)) tag = 'humiliation';
+                if(bond_tasks.includes(item)) tag = 'bondage';
+                if(pub_tasks.includes(item)) tag = 'public';
+                if(sen_tasks.includes(item)) tag = 'sensory';
+                if(srv_tasks.includes(item)) tag = 'service';
+                db.push({tags:[tag], intensity:item.i, text_zh:item.t});
+            });
 
-        // --- Themes Configuration ---
+            return db;
+        };
+
+        const TASKS_DB = GENERATE_DB();
+
+        // --- 10 THEMES ---
         const THEMES = {
-          classic: { 
-            id: 'classic', 
-            name: '經典枷鎖 (Classic)', 
-            colors: {
-              bg: 'bg-stone-950', text: 'text-stone-200', border: 'border-stone-800',
-              accent: 'text-red-600', accentBg: 'bg-red-900', card: 'bg-stone-900',
-              cardHover: 'hover:border-stone-600', modal: 'bg-stone-900 border-red-900', button: 'bg-red-800 hover:bg-red-700'
-            }
-          },
-          cyber: { 
-            id: 'cyber', 
-            name: '賽博監禁 (Cyber)', 
-            colors: {
-              bg: 'bg-black', text: 'text-cyan-50', border: 'border-cyan-900',
-              accent: 'text-fuchsia-500', accentBg: 'bg-fuchsia-900', card: 'bg-slate-900',
-              cardHover: 'hover:border-fuchsia-500 hover:shadow-[0_0_15px_rgba(217,70,239,0.3)]',
-              modal: 'bg-black border-fuchsia-600', button: 'bg-fuchsia-700 hover:bg-fuchsia-600'
-            }
-          },
-          industrial: { 
-            id: 'industrial', 
-            name: '重工業 (Industrial)', 
-            colors: {
-              bg: 'bg-neutral-900', text: 'text-orange-100', border: 'border-orange-900/50',
-              accent: 'text-orange-500', accentBg: 'bg-orange-900', card: 'bg-neutral-800',
-              cardHover: 'hover:border-orange-500', modal: 'bg-neutral-800 border-orange-600', button: 'bg-orange-700 hover:bg-orange-600'
-            }
-          },
-          clinical: { 
-            id: 'clinical', 
-            name: '臨床實驗 (Clinical)', 
-            colors: {
-              bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-300',
-              accent: 'text-rose-600', accentBg: 'bg-rose-200', card: 'bg-white shadow-sm',
-              cardHover: 'hover:border-rose-400 hover:shadow-md', modal: 'bg-white border-rose-500', button: 'bg-slate-800 hover:bg-slate-700'
-            }
-          },
-          royal: { 
-            id: 'royal', 
-            name: '皇室調教 (Royal)', 
-            colors: {
-              bg: 'bg-slate-900', text: 'text-slate-200', border: 'border-yellow-900/30',
-              accent: 'text-yellow-500', accentBg: 'bg-yellow-900/40', card: 'bg-slate-800',
-              cardHover: 'hover:border-yellow-500/50', modal: 'bg-slate-800 border-yellow-600', button: 'bg-indigo-900 hover:bg-indigo-800'
-            }
-          },
+          classic: { id: 'classic', name: '經典枷鎖 (Classic)', colors: { bg: 'bg-stone-950', text: 'text-stone-200', border: 'border-stone-800', accent: 'text-red-600', accentBg: 'bg-red-900', card: 'bg-stone-900', cardHover: 'hover:border-stone-600', modal: 'bg-stone-900 border-red-900', button: 'bg-red-800 hover:bg-red-700' } },
+          cyber: { id: 'cyber', name: '賽博監禁 (Cyber)', colors: { bg: 'bg-black', text: 'text-cyan-50', border: 'border-cyan-900', accent: 'text-fuchsia-500', accentBg: 'bg-fuchsia-900', card: 'bg-slate-900', cardHover: 'hover:border-fuchsia-500 hover:shadow-[0_0_15px_rgba(217,70,239,0.3)]', modal: 'bg-black border-fuchsia-600', button: 'bg-fuchsia-700 hover:bg-fuchsia-600' } },
+          industrial: { id: 'industrial', name: '重工業 (Industrial)', colors: { bg: 'bg-neutral-900', text: 'text-orange-100', border: 'border-orange-900/50', accent: 'text-orange-500', accentBg: 'bg-orange-900', card: 'bg-neutral-800', cardHover: 'hover:border-orange-500', modal: 'bg-neutral-800 border-orange-600', button: 'bg-orange-700 hover:bg-orange-600' } },
+          clinical: { id: 'clinical', name: '臨床實驗 (Clinical)', colors: { bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-300', accent: 'text-rose-600', accentBg: 'bg-rose-200', card: 'bg-white shadow-sm', cardHover: 'hover:border-rose-400 hover:shadow-md', modal: 'bg-white border-rose-500', button: 'bg-slate-800 hover:bg-slate-700' } },
+          royal: { id: 'royal', name: '皇室調教 (Royal)', colors: { bg: 'bg-slate-900', text: 'text-slate-200', border: 'border-yellow-900/30', accent: 'text-yellow-500', accentBg: 'bg-yellow-900/40', card: 'bg-slate-800', cardHover: 'hover:border-yellow-500/50', modal: 'bg-slate-800 border-yellow-600', button: 'bg-indigo-900 hover:bg-indigo-800' } },
+          vampire: { id: 'vampire', name: '吸血鬼 (Vampire)', colors: { bg: 'bg-black', text: 'text-red-50', border: 'border-red-900', accent: 'text-red-600', accentBg: 'bg-red-950', card: 'bg-black', cardHover: 'hover:border-red-600 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)]', modal: 'bg-black border-red-800', button: 'bg-red-900 hover:bg-red-800' } },
+          ocean: { id: 'ocean', name: '深海 (Ocean)', colors: { bg: 'bg-sky-950', text: 'text-sky-100', border: 'border-sky-800', accent: 'text-cyan-400', accentBg: 'bg-sky-900', card: 'bg-sky-900/50', cardHover: 'hover:border-cyan-400', modal: 'bg-sky-900 border-cyan-500', button: 'bg-sky-700 hover:bg-sky-600' } },
+          nature: { id: 'nature', name: '森林 (Nature)', colors: { bg: 'bg-stone-900', text: 'text-emerald-100', border: 'border-emerald-900', accent: 'text-emerald-500', accentBg: 'bg-emerald-900', card: 'bg-stone-800', cardHover: 'hover:border-emerald-500', modal: 'bg-stone-800 border-emerald-600', button: 'bg-emerald-800 hover:bg-emerald-700' } },
+          mono: { id: 'mono', name: '極簡 (Mono)', colors: { bg: 'bg-white', text: 'text-black', border: 'border-black', accent: 'text-black', accentBg: 'bg-gray-200', card: 'bg-white border-2 border-black', cardHover: 'hover:bg-gray-50', modal: 'bg-white border-4 border-black', button: 'bg-black text-white hover:bg-gray-800' } },
+          luxury: { id: 'luxury', name: '奢華 (Luxury)', colors: { bg: 'bg-neutral-900', text: 'text-amber-100', border: 'border-amber-700/50', accent: 'text-amber-400', accentBg: 'bg-amber-900/30', card: 'bg-neutral-800', cardHover: 'hover:border-amber-400 hover:shadow-[0_0_15px_rgba(251,191,36,0.2)]', modal: 'bg-neutral-800 border-amber-600', button: 'bg-amber-800 hover:bg-amber-700' } },
         };
 
         const LockCalendarPro = () => {
+          // ... (State and useEffect unchanged) ...
           const [verified, setVerified] = useState(false);
           const [step, setStep] = useState(0); 
           const [selectedDay, setSelectedDay] = useState(null); 
@@ -445,11 +242,10 @@
           const [lang, setLang] = useState('zh-TW');
 
           useEffect(() => {
-            // html2canvas is loaded via script tag in head, just checking presence
             if(window.html2canvas) setLibLoaded(true);
           }, []);
 
-          // Safe style for export node (GitHub Pages Jekyll Fix)
+          // Safe style for export node
           const exportBgStyle = { backgroundImage: `radial-gradient(circle at 50% 50%, currentColor 0%, transparent 50%)` };
 
           const now = new Date();
@@ -466,9 +262,8 @@
 
           const [calendar, setCalendar] = useState([]);
 
-          // --- Helpers ---
           const currentTheme = THEMES[userData.theme].colors;
-          const t = TRANSLATIONS[lang]; 
+          const t = TRANSLATIONS[lang] || TRANSLATIONS['zh-TW']; 
 
           const handlePrefChange = (key, val) => setUserData(prev => ({ ...prev, prefs: { ...prev.prefs, [key]: val } }));
 
@@ -476,7 +271,6 @@
             const props = { className: `w-full h-full opacity-20 ${currentTheme.text}` };
             if (type === 'start' || type === 'end') return <Lock {...props} className={`w-full h-full opacity-20 ${currentTheme.accent}`} />;
             if (type === 'check') return <ShieldAlert {...props} />;
-            
             if (tags.includes('nipples')) return <Disc {...props} />;
             if (tags.includes('anal')) return <Activity {...props} />;
             if (tags.includes('urethra')) return <Droplet {...props} />;
@@ -488,45 +282,35 @@
             if (tags.includes('public')) return <Globe {...props} />;
             if (tags.includes('service')) return <Ruler {...props} />;
             if (tags.includes('sensory')) return <Headphones {...props} />;
-            
             return <Smile {...props} />;
           };
 
+          // Simplified text getter
           const getTaskText = (taskObj) => {
-             // Explicit fallbacks to ensure text exists
-             if (lang === 'en') return taskObj.text_en || taskObj.text_zh;
-             if (lang === 'jp') return taskObj.text_jp || taskObj.text_zh;
-             if (lang === 'kr') return taskObj.text_kr || taskObj.text_en || taskObj.text_zh;
-             if (lang === 'de') return taskObj.text_en || taskObj.text_zh; // Fallback to EN for new langs
-             if (lang === 'es') return taskObj.text_en || taskObj.text_zh; // Fallback to EN
-             if (lang === 'fr') return taskObj.text_en || taskObj.text_zh; // Fallback to EN
-             if (lang === 'ru') return taskObj.text_en || taskObj.text_zh; // Fallback to EN
-             return taskObj.text_zh;
+             return taskObj.text_zh; 
           };
 
-          // --- Logic: Unique Task Generation ---
           const generateProtocol = () => {
             const daysInMonth = new Date(userData.year, userData.month, 0).getDate();
             let firstDayIndex = new Date(userData.year, userData.month - 1, 1).getDay(); 
             let offset = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
 
-            // 1. Create a large weighted pool
             let weightedPool = [];
-            // General tasks are always included
-            const baseTasks = TASKS_DB.filter(t => t.tags.includes('general'));
-            weightedPool.push(...baseTasks); 
-
-            // Add tasks based on prefs
+            
+            // Build Pool
             Object.entries(userData.prefs).forEach(([key, rating]) => {
               if (rating > 1) {
                 const tagTasks = TASKS_DB.filter(t => t.tags.includes(key));
-                // Add multiple copies to increase probability in the shuffle
-                const multiplier = rating; 
-                for (let i = 0; i < multiplier; i++) {
+                for (let i = 0; i < rating; i++) {
                   weightedPool.push(...tagTasks);
                 }
               }
             });
+
+            // Always add General tasks
+            const generalTasks = TASKS_DB.filter(t => t.tags.includes('general'));
+            weightedPool.push(...generalTasks);
+            weightedPool.push(...generalTasks);
 
             // Filter by intensity
             weightedPool = weightedPool.filter(task => {
@@ -535,18 +319,15 @@
               return true;
             });
 
-            // Fallback if pool is too small
-            if (weightedPool.length < 5) weightedPool = TASKS_DB.filter(t => t.tags.includes('general'));
-
-            // 2. Shuffle the weighted pool completely
+            // Shuffle
             const shuffledPool = [...weightedPool].sort(() => Math.random() - 0.5);
 
-            // 3. Select unique tasks
+            // Strict Unique Selection
             const selectedTasks = [];
             const usedTexts = new Set();
             
+            // 1. Try to fill from user prefs first
             for (const task of shuffledPool) {
-              // Use text_zh as unique ID for simplicity since it always exists
               if (!usedTexts.has(task.text_zh)) {
                 selectedTasks.push(task);
                 usedTexts.add(task.text_zh);
@@ -554,32 +335,35 @@
               if (selectedTasks.length >= daysInMonth) break;
             }
 
-            // If we still don't have enough unique tasks (rare case), fill with randoms
+            // 2. If not enough, fill from UNUSED General tasks
+            if (selectedTasks.length < daysInMonth) {
+                const unusedGeneral = TASKS_DB.filter(t => t.tags.includes('general') && !usedTexts.has(t.text_zh));
+                const extraTasks = unusedGeneral.sort(() => Math.random() - 0.5);
+                for(const task of extraTasks) {
+                    selectedTasks.push(task);
+                    usedTexts.add(task.text_zh);
+                    if (selectedTasks.length >= daysInMonth) break;
+                }
+            }
+
+            // 3. Last resort: Allow repeats
             while (selectedTasks.length < daysInMonth) {
                selectedTasks.push(shuffledPool[Math.floor(Math.random() * shuffledPool.length)]);
             }
 
-            // 4. Build Days (No fixed start/end tasks)
             const days = [];
             for (let k = 0; k < offset; k++) {
               days.push({ day: null, type: 'empty' });
             }
 
-            // Shuffle selected unique tasks again to distribute intensity
             const finalTaskOrder = selectedTasks.sort(() => Math.random() - 0.5);
 
             for (let i = 1; i <= daysInMonth; i++) {
-              let taskObj = finalTaskOrder[i - 1]; // Use index
+              let taskObj = finalTaskOrder[i - 1]; 
               let type = "normal";
-              
-              // Optional: Mark special days visually but keep random tasks
-              if (i === 1) type = "start";
-              else if (i === daysInMonth) type = "end";
-              else if (i % 7 === 0) type = "check";
-
               days.push({ 
                 day: i, 
-                task: getTaskText(taskObj), 
+                task: taskObj.text_zh, 
                 tags: taskObj.tags || ['general'], 
                 type 
               });
@@ -592,7 +376,7 @@
             if (!exportRef.current || !window.html2canvas) { alert("Loading..."); return; }
             try {
               const canvas = await window.html2canvas(exportRef.current, {
-                scale: 2, backgroundColor: userData.theme === 'clinical' ? '#f8fafc' : '#0c0a09',
+                scale: 2, backgroundColor: userData.theme === 'clinical' || userData.theme === 'mono' ? '#ffffff' : '#0c0a09',
                 useCORS: true, logging: false
               });
               const link = document.createElement('a');
@@ -602,6 +386,7 @@
             } catch (err) { console.error(err); alert("Failed."); }
           };
 
+          // --- RENDER ---
           if (!verified) {
             return (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-95 text-red-600 font-sans">
@@ -611,6 +396,7 @@
                   <div className="text-stone-400 text-sm text-left mb-6 space-y-2 border-t border-b border-stone-700 py-4">
                     <p>{t.warn_text1}</p>
                     <p>{t.warn_text2}</p>
+                    <p>{t.warn_text3}</p>
                   </div>
                   <div className="flex gap-4 justify-center">
                     <button onClick={() => window.location.href = 'https://www.google.com'} className="px-6 py-2 border border-stone-600 text-stone-400 hover:bg-stone-800 rounded transition-colors">{t.warn_leave}</button>
@@ -639,11 +425,15 @@
 
           return (
             <div className={`min-h-screen ${currentTheme.bg} ${currentTheme.text} font-sans pb-20 overflow-x-hidden transition-colors duration-500`}>
+              {/* Header */}
               <header className={`backdrop-blur-md sticky top-0 z-40 border-b ${currentTheme.border} p-4 bg-black/20`}>
                 <div className="max-w-4xl mx-auto flex justify-between items-center">
-                  <div className={`flex items-center gap-2 ${currentTheme.accent}`}>
-                    <Lock className="w-6 h-6" />
-                    <span className={`font-black tracking-widest text-lg ${currentTheme.text}`}>{t.title} <span className="text-xs font-normal opacity-70">{t.subtitle}</span></span>
+                  <div>
+                    <div className={`flex items-center gap-2 ${currentTheme.accent}`}>
+                        <Lock className="w-6 h-6" />
+                        <span className={`font-black tracking-widest text-lg ${currentTheme.text}`}>{t.title} <span className="text-xs font-normal opacity-70">{t.subtitle}</span></span>
+                    </div>
+                    <div className="text-[10px] opacity-50 font-mono mt-1 ml-8">By @ARNO19450</div>
                   </div>
                   <div className="flex items-center gap-4">
                      <select value={lang} onChange={(e) => setLang(e.target.value)} className={`bg-transparent border ${currentTheme.border} text-xs p-1 rounded ${currentTheme.text} opacity-70 hover:opacity-100 focus:outline-none`}>
@@ -655,12 +445,18 @@
                        <option value="fr">Français</option>
                        <option value="es">Español</option>
                        <option value="ru">Русский</option>
+                       <option value="it">Italiano</option>
+                       <option value="pt">Português</option>
+                       <option value="th">ไทย</option>
+                       <option value="vi">Tiếng Việt</option>
+                       <option value="id">Bahasa Indonesia</option>
                      </select>
                      <div className="text-xs opacity-50 font-mono hidden sm:block">{t.version}</div>
                   </div>
                 </div>
               </header>
 
+              {/* Main Content */}
               <main className="max-w-4xl mx-auto p-4 mt-8">
                 {step === 0 && (
                   <div className="max-w-2xl mx-auto text-center space-y-8 animate-fade-in">
@@ -685,7 +481,7 @@
                     </div>
 
                     <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
-                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Calendar className="w-4 h-4"/> {t.label_date}</h3>
+                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><CalendarIcon className="w-4 h-4"/> {t.label_date}</h3>
                        <div className="grid grid-cols-2 gap-4">
                          <div><label className="text-xs opacity-60 mb-1 block">{t.label_year}</label><input type="number" value={userData.year} onChange={e => setUserData({...userData, year: parseInt(e.target.value)})} className={`w-full bg-black/20 border ${currentTheme.border} rounded p-3 focus:outline-none focus:border-current`} /></div>
                          <div><label className="text-xs opacity-60 mb-1 block">{t.label_month}</label><input type="number" min="1" max="12" value={userData.month} onChange={e => setUserData({...userData, month: parseInt(e.target.value)})} className={`w-full bg-black/20 border ${currentTheme.border} rounded p-3 focus:outline-none focus:border-current`} /></div>
@@ -710,12 +506,12 @@
 
                     <div className={`${currentTheme.card} border ${currentTheme.border} p-6 rounded-lg`}>
                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2"><Palette className="w-4 h-4"/> {t.step1_theme_title}</h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                         {Object.values(THEMES).map(th => {
-                          const btnStyle = { backgroundColor: th.id === 'clinical' ? '#f1f5f9' : '#1c1917' };
+                          const btnStyle = { backgroundColor: th.id === 'clinical' || th.id === 'mono' ? '#f1f5f9' : '#1c1917' };
                           return (
-                            <button key={th.id} onClick={() => setUserData({...userData, theme: th.id})} className={`p-3 rounded border text-left flex items-center gap-3 transition-all ${userData.theme === th.id ? `${currentTheme.border} ring-1 ring-offset-2 ring-offset-transparent ring-current` : 'border-transparent opacity-50 hover:opacity-100'}`} style={btnStyle} >
-                              <div className={`w-4 h-4 rounded-full ${th.colors.accentBg}`}></div><span className={th.id === 'clinical' ? 'text-slate-800' : 'text-white'}>{th.name}</span>
+                            <button key={th.id} onClick={() => setUserData({...userData, theme: th.id})} className={`p-2 rounded border text-left flex flex-col items-center gap-2 transition-all ${userData.theme === th.id ? `${currentTheme.border} ring-1 ring-offset-2 ring-offset-transparent ring-current` : 'border-transparent opacity-50 hover:opacity-100'}`} style={btnStyle} >
+                              <div className={`w-6 h-6 rounded-full ${th.colors.accentBg}`}></div><span className={`text-xs font-bold ${th.id === 'clinical' || th.id === 'mono' ? 'text-slate-800' : 'text-white'}`}>{th.name}</span>
                             </button>
                           );
                         })}
@@ -757,7 +553,7 @@
                     {selectedDay && selectedDay.type !== 'empty' && (
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setSelectedDay(null)}>
                         <div className={`${currentTheme.modal} border-2 p-6 rounded-lg max-w-sm w-full shadow-2xl relative ${currentTheme.bg}`} onClick={e => e.stopPropagation()}>
-                          <button onClick={() => setSelectedDay(null)} className="absolute top-3 right-3 opacity-50 hover:opacity-100"><X className="w-5 h-5"/></button>
+                          <button onClick={() => setSelectedDay(null)} className="absolute top-3 right-3 opacity-50 hover:opacity-100"><XIcon className="w-5 h-5"/></button>
                           <div className="flex justify-center mb-6"><div className={`w-20 h-20 rounded-full bg-black/20 flex items-center justify-center p-4 ${currentTheme.border} border`}>{getTaskIcon(selectedDay.tags, selectedDay.type)}</div></div>
                           <h3 className={`${currentTheme.accent} font-mono text-lg font-bold mb-4 border-b ${currentTheme.border} pb-2 text-center`}>{userData.year}.{userData.month}.{String(selectedDay.day).padStart(2,'0')}</h3>
                           <p className={`text-lg leading-relaxed font-medium ${currentTheme.text} text-center`}>{selectedDay.task}</p>
@@ -768,28 +564,45 @@
                 )}
               </main>
 
+              {/* EXPORT NODE (1920x1080) */}
               <div className="absolute top-0 left-[-9999px]">
-                  <div ref={exportRef} className={`w-[1920px] h-[1080px] ${currentTheme.bg} ${currentTheme.text} px-16 py-12 flex flex-col justify-between border-[20px] ${currentTheme.border} relative`}>
+                  <div ref={exportRef} className={`w-[1920px] h-[1080px] ${currentTheme.bg} ${currentTheme.text} px-16 py-6 flex flex-col justify-between border-[20px] ${currentTheme.border} relative`}>
                     <div className="absolute inset-0 opacity-10" style={exportBgStyle}></div>
-                    <div className={`flex justify-between items-start border-b-4 ${currentTheme.border} pb-6 z-10`}>
+                    
+                    {/* Header */}
+                    <div className={`flex justify-between items-start border-b-4 ${currentTheme.border} pb-2 z-10`}>
                       <div><h1 className="text-6xl font-black tracking-[0.2em] mb-4">{t.title}</h1><div className="flex gap-8 text-2xl opacity-60 font-mono"><span>SUBJECT: <span className="font-bold opacity-100">{userData.name}</span></span><span>DATE: {userData.year} / {userData.month}</span></div></div>
-                      <div className="text-right"><Lock className={`w-20 h-20 ${currentTheme.accent} mb-2`} /><div className="text-xl font-mono opacity-50">{t.subtitle}</div></div>
+                      <div className="text-right">
+                        <Lock className={`w-20 h-20 ${currentTheme.accent} mb-2`} />
+                        <div className="text-xl font-mono opacity-50">{t.subtitle}</div>
+                        <div className="text-sm font-mono opacity-40 mt-2">By @ARNO19450</div>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-7 gap-4 mb-2 mt-4 px-2 opacity-50 font-mono text-lg z-10">{['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center">{d}</div>)}</div>
-                    <div className="grid grid-cols-7 gap-4 flex-grow px-2 z-10 content-start">
+
+                    {/* Grid Days Header */}
+                    <div className="grid grid-cols-7 gap-4 mb-2 mt-2 px-2 opacity-50 font-mono text-lg z-10">{['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(d => <div key={d} className="text-center">{d}</div>)}</div>
+                    
+                    {/* Calendar Grid */}
+                    <div className="grid grid-cols-7 gap-x-4 gap-y-2 flex-grow px-2 z-10 content-start">
                       {calendar.map((day, idx) => (
                         day.type === 'empty' ? (<div key={`exp-empty-${idx}`} className="border-transparent"></div>) : (
                           <div key={day.day} className={`border ${currentTheme.border} p-3 relative flex flex-col h-full overflow-hidden ${day.type === 'start' || day.type === 'end' ? 'bg-black/10' : ''}`}>
                             <div className="absolute -right-2 -bottom-2 w-16 h-16 transform rotate-12 opacity-[0.07]">{getTaskIcon(day.tags, day.type)}</div>
-                            <span className={`text-xl font-bold font-mono mb-1 ${day.type === 'check' ? 'text-yellow-500' : 'opacity-40'}`}>{day.day}</span>
-                            <p className="text-[11px] leading-tight opacity-90 relative z-10 whitespace-normal break-words font-medium">{day.task}</p>
+                            <span className={`text-2xl font-bold font-mono mb-1 ${day.type === 'check' ? 'text-yellow-500' : 'opacity-40'}`}>{day.day}</span>
+                            {/* Adjusted Font Size for readability and fitting */}
+                            <p className="text-[15px] leading-tight opacity-90 relative z-10 whitespace-normal break-words font-medium">{day.task}</p>
                           </div>
                         )
                       ))}
                     </div>
-                    <div className={`flex justify-between items-end border-t ${currentTheme.border} pt-6 z-10`}>
+
+                    {/* Footer */}
+                    <div className={`flex justify-between items-end border-t ${currentTheme.border} pt-2 z-10`}>
                       <div className="opacity-50 font-mono text-lg w-1/2 whitespace-pre-wrap">{t.footer_sign}</div>
-                      <div className="text-right"><div className="text-4xl font-black opacity-80">{t.footer_approve}</div></div>
+                      <div className="text-right">
+                        <div className="text-4xl font-black opacity-80">{t.footer_approve}</div>
+                        <div className="text-sm font-mono opacity-40 mt-2">By @ARNO19450</div>
+                      </div>
                     </div>
                   </div>
               </div>
